@@ -1,6 +1,17 @@
 const data = require('../data/postData');
 
 exports.createPost = async dados => {
+	const entrada = dados.titulo;
+
+	dados.titulo = function convert(entrada) {
+		entrada = entrada.replace(/&/g, '&amp;');
+		entrada = entrada.replace(/>/g, '&gt;');
+		entrada = entrada.replace(/</g, '&lt;');
+		entrada = entrada.replace(/"/g, '&quot;');
+		entrada = entrada.replace(/'/g, '&#039;');
+		return entrada;
+	};
+
 	return await data.createPost(dados);
 };
 
