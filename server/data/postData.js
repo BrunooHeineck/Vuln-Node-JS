@@ -6,19 +6,22 @@ exports.createPost = async dados => {
 	INSERT INTO posts 
 	(
 		posts_titulo,
-		posts_conteudo,
+		posts_pais,
+		posts_fotografo,
 		posts_usuario,
 		posts_privado
 	) 
 	VALUES 
 	(
 		'${dados.titulo}',
-		'${dados.conteudo}',
+		'${dados.pais}',
+		'${dados.fotografo}',
 		'${dados.usuario}',
-		'${dados.privado}'
-	) 
-	RETURNING posts_id
-	`
+		'false'
+		) 
+		RETURNING posts_id
+		`
+		// '${dados.privado}'
 	);
 
 	return rows[0].posts_id;
@@ -36,9 +39,12 @@ exports.getAllPost = async () => {
 exports.updatePost = async (posts_id, dados) => {
 	return dataBase.query(`
 	UPDATE posts SET 
+
 		posts_titulo = '${dados.titulo}',
-		posts_conteudo = '${dados.conteudo}',
+		posts_pais = '${dados.pais}',
+		posts_fotografo = '${dados.fotografo}',
 		posts_privado = '${dados.privado}'
+
 	WHERE 
 		posts_id = ${posts_id}
 	`);

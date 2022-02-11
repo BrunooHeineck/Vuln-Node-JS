@@ -3,6 +3,8 @@ const postService = require('../service/postService');
 const utilservice = require('../service/utilService');
 const { fakeUser } = require('../utils/fakeUser');
 const { fakePost } = require('../utils/fakePost');
+const { request } = require('../utils/utils');
+const { endpoints } = require('../consts');
 const dataBase = require('../config/database').pool;
 require('dotenv/config');
 
@@ -22,7 +24,7 @@ afterEach(async () => {
 describe('Test Driven Development', () => {
 	describe('USERS', () => {
 		describe('CREATE', () => {
-			test('Deve criar um novo usuário', async () => {
+			test('Deve criar um novo usuário.', async () => {
 				const dados = fakeUser();
 
 				const id = await userService.createUser(dados);
@@ -38,9 +40,39 @@ describe('Test Driven Development', () => {
 				expect(rows[0].usr_email).toBe(dados.email);
 				expect(rows[0].usr_senha).toBe(dados.senha);
 			});
+			test('Não deve criar um novo usuário com email e/ou username já cadastrado.', async () => {
+				const dadosEmail = fakeUser();
+				const dadosUsername = fakeUser();
+
+				await userService.createUser(dadosEmail);
+				const { rowCount: quantidadePorEmail } =
+					await utilservice.getAllUsers();
+
+				expect(quantidadePorEmail).toBe(1);
+
+				await userService.createUser(dadosEmail);
+				const { rowCount: quantidadePorEmailSecond } =
+					await utilservice.getAllUsers();
+
+				expect(quantidadePorEmailSecond).toBe(1);
+
+				await utilservice.clearAllUsers();
+
+				await userService.createUser(dadosUsername);
+				const { rowCount: quantidadeProUsername } =
+					await utilservice.getAllUsers();
+
+				expect(quantidadeProUsername).toBe(1);
+
+				await userService.createUser(dadosUsername);
+				const { rowCount: quantidadeProUsernameSecond } =
+					await utilservice.getAllUsers();
+
+				expect(quantidadeProUsernameSecond).toBe(1);
+			});
 		});
 		describe('READ', () => {
-			test('Deve retornar todos os usuários', async () => {
+			test('Deve retornar todos os usuários.', async () => {
 				const dados0 = fakeUser();
 				const dados1 = fakeUser();
 				const dados2 = fakeUser();
@@ -62,7 +94,6 @@ describe('Test Driven Development', () => {
 				expect(rows[1].usr_nome).toBe(dados1.nome);
 				expect(rows[1].usr_sobrenome).toBe(dados1.sobrenome);
 				expect(rows[1].usr_telefone).toBe(dados1.telefone);
-
 				expect(rows[1].usr_username).toBe(dados1.username);
 				expect(rows[1].usr_email).toBe(dados1.email);
 				expect(rows[1].usr_senha).toBe(dados1.senha);
@@ -85,9 +116,41 @@ describe('Test Driven Development', () => {
 				expect(rows[0].usr_email).toBe(dados.email);
 				expect(rows[0].usr_senha).toBe(dados.senha);
 			});
+			test('Deve retornar o usuário pelo e-mail ou username', async () => {
+				const dadosEmail = fakeUser();
+				const dadosUsername = fakeUser();
+
+				const { email } = dadosEmail;
+				const { username } = dadosUsername;
+
+				await userService.createUser(dadosEmail);
+				await userService.createUser(dadosUsername);
+
+				const { rows: rowsEmail } = await utilservice.getUserByEmail(
+					email
+				);
+				const { rows: rowsUsername } =
+					await utilservice.getUserByUsername(username);
+
+				expect(rowsEmail[0].usr_nome).toBe(dadosEmail.nome);
+				expect(rowsEmail[0].usr_sobrenome).toBe(dadosEmail.sobrenome);
+				expect(rowsEmail[0].usr_username).toBe(dadosEmail.username);
+				expect(rowsEmail[0].usr_email).toBe(dadosEmail.email);
+				expect(rowsEmail[0].usr_senha).toBe(dadosEmail.senha);
+
+				expect(rowsUsername[0].usr_nome).toBe(dadosUsername.nome);
+				expect(rowsUsername[0].usr_sobrenome).toBe(
+					dadosUsername.sobrenome
+				);
+				expect(rowsUsername[0].usr_username).toBe(
+					dadosUsername.username
+				);
+				expect(rowsUsername[0].usr_email).toBe(dadosUsername.email);
+				expect(rowsUsername[0].usr_senha).toBe(dadosUsername.senha);
+			});
 		});
 		describe('UPDATE', () => {
-			test('Deve atualizar os dados do usuário', async () => {
+			test('Deve atualizar os dados do usuário.', async () => {
 				const dados = fakeUser();
 
 				const dadosAtualizados = fakeUser();
@@ -106,7 +169,7 @@ describe('Test Driven Development', () => {
 			});
 		});
 		describe('DELETE', () => {
-			test('Deve exluir um usuário pelo id', async () => {
+			test('Deve exluir um usuário pelo id.', async () => {
 				const dados = fakeUser();
 
 				const id = await userService.createUser(dados);
@@ -119,7 +182,7 @@ describe('Test Driven Development', () => {
 
 	describe('POSTS', () => {
 		describe('CREATE', () => {
-			test('Deve criar um novo post', async () => {
+			test('Deve criar um novo post.', async () => {
 				const userDados = fakeUser();
 
 				const idUser = await userService.createUser(userDados);
@@ -134,13 +197,14 @@ describe('Test Driven Development', () => {
 
 				expect(rowCount).toBe(1);
 				expect(rows[0].posts_titulo).toBe(postDados.titulo);
-				expect(rows[0].posts_conteudo).toBe(postDados.conteudo);
+				expect(rows[0].posts_pais).toBe(postDados.pais);
+				expect(rows[0].posts_fotografo).toBe(postDados.fotografo);
 				expect(rows[0].posts_usuario).toBe(postDados.usuario);
 				expect(rows[0].posts_privado).toBe(postDados.privado);
 			});
 		});
 		describe('READ', () => {
-			test('Deve retornar todos os posts', async () => {
+			test('Deve retornar todos os posts.', async () => {
 				const userDados0 = fakeUser();
 				const userDados1 = fakeUser();
 				const userDados2 = fakeUser();
@@ -164,23 +228,26 @@ describe('Test Driven Development', () => {
 
 				expect(rowCount).toBe(3);
 				expect(rows[0].posts_titulo).toBe(postDados0.titulo);
-				expect(rows[0].posts_conteudo).toBe(postDados0.conteudo);
+				expect(rows[0].posts_pais).toBe(postDados0.pais);
+				expect(rows[0].posts_fotografo).toBe(postDados0.fotografo);
 				expect(rows[0].posts_usuario).toBe(postDados0.usuario);
 				expect(rows[0].posts_privado).toBe(postDados0.privado);
 
 				expect(rows[1].posts_titulo).toBe(postDados1.titulo);
-				expect(rows[1].posts_conteudo).toBe(postDados1.conteudo);
+				expect(rows[1].posts_pais).toBe(postDados1.pais);
+				expect(rows[1].posts_fotografo).toBe(postDados1.fotografo);
 				expect(rows[1].posts_usuario).toBe(postDados1.usuario);
 				expect(rows[1].posts_privado).toBe(postDados1.privado);
 
 				expect(rows[2].posts_titulo).toBe(postDados2.titulo);
-				expect(rows[2].posts_conteudo).toBe(postDados2.conteudo);
+				expect(rows[2].posts_pais).toBe(postDados2.pais);
+				expect(rows[2].posts_fotografo).toBe(postDados2.fotografo);
 				expect(rows[2].posts_usuario).toBe(postDados2.usuario);
 				expect(rows[2].posts_privado).toBe(postDados2.privado);
 			});
 		});
 		describe('UPDATE', () => {
-			test('Deve atualizar os dados do post', async () => {
+			test('Deve atualizar os dados do post.', async () => {
 				const userDados = fakeUser();
 				const usr_id = await userService.createUser(userDados);
 
@@ -190,19 +257,21 @@ describe('Test Driven Development', () => {
 				const postDadosUpdate = fakePost();
 
 				const post_id = await postService.createPost(postDados);
+				postDadosUpdate.privado = false;
 
 				await postService.updatePost(post_id, postDadosUpdate);
 
 				const { rows } = await postService.getPostById(post_id);
 
 				expect(rows[0].posts_titulo).toBe(postDadosUpdate.titulo);
-				expect(rows[0].posts_conteudo).toBe(postDadosUpdate.conteudo);
+				expect(rows[0].posts_pais).toBe(postDadosUpdate.pais);
+				expect(rows[0].posts_fotografo).toBe(postDadosUpdate.fotografo);
 				expect(rows[0].posts_usuario).toBe(postDados.usuario);
 				expect(rows[0].posts_privado).toBe(postDadosUpdate.privado);
 			});
 		});
 		describe('DELETE', () => {
-			test('Deve exluir um post pelo id', async () => {
+			test('Deve exluir um post pelo id.', async () => {
 				const userDados = fakeUser();
 				const usr_id = await userService.createUser(userDados);
 
@@ -221,7 +290,7 @@ describe('Test Driven Development', () => {
 	});
 
 	describe('LOGIN', () => {
-		test('Deve realizar o login', async () => {
+		test('Deve realizar o login.', async () => {
 			const dados = fakeUser();
 			const usr_id = await userService.createUser(dados);
 
@@ -237,5 +306,43 @@ describe('Test Driven Development', () => {
 			expect(rows[0].usr_email).toBe(dados.email);
 			expect(rows[0].usr_senha).toBe(dados.senha);
 		});
+		test('Não deve realizar o login com credenciais inválidas ', async () => {
+			const dados = fakeUser();
+			await userService.createUser(dados);
+
+			const { email, senha } = dados;
+
+			const { rows, userFound, rowCount } = await userService.login(
+				'inválido',
+				senha
+			);
+
+			expect(userFound).toBe(false);
+		});
+	});
+
+	describe('RENDER', () => {
+		test('Deve renderizar na tela "Login Inválido" ao tentar login e senha estiver incorreta.', async () => {
+			const response = await request(endpoints.renderLoginerr);
+
+			expect(response.data).toContain('Login Inválido');
+		});
+
+		test('Deve renderizar na tela "Usuário não encontrado" ao tentar login e usuário não existir.', async () => {
+			const response = await request(
+				endpoints.renderLoginerrusernaoencontrado
+			);
+
+			expect(response.data).toContain('Usuário não encontrado');
+		});
+
+		// test('Deve renderizar na tela "E-mail já cadastrado" ao tentar cadastrar um E-mail já cadastrado.', async () => {
+		// 	const dados = fakeUser();
+
+		// 	await userService.createUser(dados);
+		// 	const { data } = await userService.createUser(dados);
+
+		// 	expect(data).toContain('E-mail já cadastrado');
+		// });
 	});
 });

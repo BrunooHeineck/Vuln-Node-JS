@@ -19,8 +19,11 @@
 	<body class="bg-dark h-100 text-light">
 		<main class="form-signup justify-content-center align-items-center">
 			<h1 class="h3 mb-3 fw-normal">Cadastro Compassorkut</h1>
-			<form <%-actionCadastrar %>
-				method="get" class="d-flex flex-wrap justify-content-between" >
+			<form
+				action="<%-formActionSignup%>"
+				method="<%-formMethodSignup%>"
+				class="d-flex flex-wrap justify-content-between"
+			>
 				<div class="form-label text-dark w-50 pe-2">
 					<label class="text-light fw-light fs-4" for="nome"
 						>Nome</label
@@ -41,7 +44,7 @@
 					<input
 						type="text"
 						class="form-control"
-						id="Sobrenome"
+						id="sobrenome"
 						name="sobrenome"
 						placeholder="Sobrenome"
 						required
@@ -117,13 +120,14 @@
 				</div>
 				<div class="form-label text-dark w-50 pe-2">
 					<label class="text-light fw-light fs-4" for="nome"
-						>Data Nascimento</label
+						>Telefone</label
 					>
 					<input
-						type="date"
+						type="text"
 						class="form-control"
-						id="dataNascimento"
-						name="dataNascimento"
+						id="telefone"
+						name="telefone"
+						placeholder="(xx)xxxxx-xxxx"
 						required
 					/>
 				</div>
@@ -135,8 +139,22 @@
 				<div class="text-center w-100 mt-3">
 					<p class="text-secondary">
 						Tem uma conta?
-						<a <%-hrefLogin%> class="text-warning">Conecte-se</a>
+						<a href="<%-endpointLogin%>" class="text-warning"
+							>Conecte-se</a
+						>
 					</p>
+					<p>
+						<a
+							href="<%-endpointPaginaInicial %>"
+							class="text-warning"
+							>Voltar à página inicial</a
+						>
+					</p>
+				</div>
+				<div class="w-100">
+					<h3 href="#" class="text-danger text-center">
+						<%- signupErrorMessage %>
+					</h3>
 				</div>
 			</form>
 		</main>

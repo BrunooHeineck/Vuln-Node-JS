@@ -1,4 +1,16 @@
-const cookieParser = require('cookie-parser');
+const axios = require('axios');
+
+exports.request = (endPoint, method, data) => {
+	const URL_PADRAO = 'http://localhost:3000';
+	const url = `${URL_PADRAO}${endPoint}`;
+
+	return axios({
+		url,
+		method,
+		data,
+		validateStatus: false,
+	});
+};
 
 exports.clearCookies = (cookies, res, redirect) => {
 	Object.keys(cookies).forEach(cookie => res.clearCookie(cookie));

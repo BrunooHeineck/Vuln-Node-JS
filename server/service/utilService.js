@@ -14,3 +14,11 @@ exports.getUserById = async id => {
 exports.getAllUsers = async () => {
 	return await data.getAllUsers();
 };
+
+exports.getUserByEmail = async email => {
+	return await data.getUserByEmail(email);
+};
+
+exports.getUserByUsername = async username => {
+	return await data.getUserByUsername(username);
+};

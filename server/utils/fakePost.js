@@ -1,12 +1,17 @@
 const { faker } = require('@faker-js/faker');
 
 exports.fakePost = () => {
-	const titulo = faker.lorem.sentence();
-	const conteudo = faker.lorem.paragraph(10);
+	faker.setLocale('pt_BR');
+	const titulo = faker.lorem.sentence(
+		faker.datatype.number({ min: 1, max: 5 })
+	);
+	const pais = faker.address.country();
+	const fotografo = faker.name.findName();
 
 	const postDados = {
 		titulo: titulo,
-		conteudo: conteudo,
+		pais: pais,
+		fotografo: fotografo,
 		privado: false,
 	};
 

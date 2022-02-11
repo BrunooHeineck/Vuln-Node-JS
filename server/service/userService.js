@@ -1,7 +1,17 @@
 const data = require('../data/userData');
+const utilService = require('../service/utilService');
 
 exports.createUser = async dados => {
-	return await data.createUser(dados);
+	const { rowCount: emailJaUtilizado } = await utilService.getUserByEmail(
+		dados.email
+	);
+
+	const { rowCount: usernameJaUtilizado } =
+		await utilService.getUserByUsername(dados.username);
+
+	if (usernameJaUtilizado || emailJaUtilizado) {
+		return { usernameJaUtilizado, emailJaUtilizado };
+	} else return await data.createUser(dados);
 };
 
 exports.updateUser = async (usr_id, dados) => {
@@ -13,5 +23,20 @@ exports.deleteUser = async usr_id => {
 };
 
 exports.login = async (email, senha) => {
-	return await data.login(email, senha);
+	const userEncontrado = await validaEmailUsername(email);
+
+	const response = await data.login(email, senha);
+	response.userFound = userEncontrado;
+
+	return response;
 };
+
+async function validaEmailUsername(email) {
+	const { rowCount: emailEncontrado } = await utilService.getUserByEmail(
+		email
+	);
+	const { rowCount: usernameEncontrado } =
+		await utilService.getUserByUsername(email);
+
+	return Boolean(emailEncontrado || usernameEncontrado);
+}

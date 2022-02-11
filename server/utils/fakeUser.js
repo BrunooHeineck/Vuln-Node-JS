@@ -1,6 +1,7 @@
 const { faker } = require('@faker-js/faker');
 
 exports.fakeUser = () => {
+	faker.setLocale('pt_BR');
 	const nome = faker.name.firstName();
 	const sobrenome = faker.name.lastName();
 	const username = faker.internet.userName(nome, sobrenome);

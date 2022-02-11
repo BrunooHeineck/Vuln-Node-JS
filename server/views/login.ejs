@@ -21,8 +21,11 @@
 	<body class="bg-dark h-100 text-light">
 		<main class="form-signin justify-content-center align-items-center">
 			<h1 class="h3 mb-3 fw-normal">Login Compassorkut</h1>
-			<form <%-actionLogin %>
-				class="text-dark">
+			<form
+				action="<%-formActionLogin %>"
+				method="<%-formMethodLogin %>"
+				class="text-dark"
+			>
 				<div class="form-floating text-dark mb-1">
 					<input
 						type="text"
@@ -69,19 +72,30 @@
 				</div>
 
 				<div class="d-flex justify-content-between flex-wrap">
-					<p href="#" class="text-secondary">
-						Novo Usuário?
-						<a <%-hrefCadastrar %>
-							class="text-warning">Cadastre-se</a
-						>
-					</p>
+					<div>
+						<p class="text-secondary">
+							Novo Usuário?
+							<a href="<%-endpointSignup %>" class="text-warning"
+								>Cadastre-se</a
+							>
+						</p>
+						<p class="text-secondary">
+							<a
+								href="<%-endpointPaginaInicial %>"
+								class="text-warning"
+								>Voltar à página inicial</a
+							>
+						</p>
+					</div>
 
 					<a href="#"
 						><i class="text-secondary"> Esqueceu sua senha?</i>
 					</a>
 				</div>
 				<div class="d-flex justify-content-center flex-wrap">
-					<h3 href="#" class="text-danger"><%- loginError %></h3>
+					<h3 href="#" class="text-danger">
+						<%- loginErrorMessage %>
+					</h3>
 				</div>
 			</form>
 		</main>

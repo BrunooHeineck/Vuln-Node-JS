@@ -15,3 +15,15 @@ exports.getUserById = async id => {
 exports.getAllUsers = async () => {
 	return await dataBase.query('SELECT * FROM users');
 };
+
+exports.getUserByEmail = async emailUsername => {
+	return await dataBase.query(
+		`SELECT * FROM users WHERE usr_email='${emailUsername}'`
+	);
+};
+
+exports.getUserByUsername = async username => {
+	return await dataBase.query(
+		`SELECT * FROM users WHERE usr_username='${username}'`
+	);
+};

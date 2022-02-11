@@ -1,15 +1,6 @@
 const { Pool } = require('pg');
 require('dotenv/config');
 
-//Base local
-// const pool = new Pool({
-// 	user: 'postgres',
-// 	password: 'postgres',
-// 	host: 'localhost',
-// 	database: 'postgres',
-// 	port: 5432,
-// });
-
 //Base nuvem
 const pool = new Pool({
 	user: process.env.DB_USER,

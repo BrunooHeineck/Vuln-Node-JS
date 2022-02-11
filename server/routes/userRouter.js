@@ -1,80 +1,40 @@
 const router = require('express').Router();
-const { response } = require('express');
-const { endPoints } = require('../consts');
-const service = require('../service/userService');
+const { endpoints, rootDirname } = require('../consts');
+const cookieParser = require('cookie-parser');
+const userService = require('../service/userService');
+const { setCookies, clearCookies } = require('../utils/utils');
+router.use(cookieParser());
 
-// router.post('/login', async (req, res) => {
-// 	console.log(req);
-// 	console.log(req.body);
-// 	res.end();
-// });
-
-router.get(endPoints.login, async (req, res) => {
-	//query => get
-	//body => post
-
+router.get(endpoints.login, async (req, res) => {
 	const { email, senha } = req.query;
+	const { rows, userFound, rowCount } = await userService.login(email, senha);
+	const userNotFound = !userFound;
+	const loginSucesso = rowCount;
 
-	const response = await service.login(email, senha);
-
-	res.end();
-	// const lembrarDeMim = req.query.lembrarDeMim;
-
-	// const loginErr = req.url.includes('loginerr');
-	// const requestLogin = req.url.includes('email');
-	// const loginErrUserEncontrado = req.url.endsWith('usernotfound');
-
-	// const jaLogado = req.cookies?.username;
-
-	// const loginErrorMensagem = loginErrUserEncontrado
-	// 	? 'Usuário não encontrado'
-	// 	: 'Login Incorreto';
-	// const setCookie = response => {
-	// 	res.clearCookie('username');
-	// 	res.clearCookie('ud_nome');
-
-	// 	const { rowsLogin, userEncontrado } = response;
-
-	// 	console.log(rowsLogin);
-
-	// 	if (rowsLogin) {
-	// 		res.cookie('username', rowsLogin.usr_username);
-	// 		res.cookie('admin', Boolean(rowsLogin.usr_admin));
-	// 		res.cookie('id', rowsLogin.usr_id);
-	// 		res.cookie('response', rowsLogin);
-	// 		res.redirect('/');
-	// 	} else {
-	// 		res.redirect(
-	// 			userEncontrado
-	// 				? endPointLoginErr
-	// 				: endPointloginErrUserEncontrado
-	// 		);
-	// 	}
-	// };
-	// if (jaLogado) res.redirect('/');
-	// else if (requestLogin) {
-	// 	const response = await service.login(email, senha);
-	// 	setCookie(response);
-	// } else {
-	// 	res.render('login', {
-	// 		loginError: loginErr ? loginErrorMensagem : '',
-	// 		hrefCadastrar: hrefCadastrar,
-	// 		actionLogin: actionLogin,
-	// 	});
-	// }
+	if (userNotFound) {
+		res.redirect(endpoints.renderLoginerrusernaoencontrado);
+	} else if (loginSucesso) {
+		clearCookies(req.cookies);
+		setCookies(rows[0], res);
+		res.redirect(endpoints.renderPaginaInicial);
+	} else {
+		res.redirect(endpoints.renderLoginerr);
+	}
 });
 
-// router.post(endPoints.login, async (req, res) => {
-// 	res.json('Login Post');
-// });
+router.get(endpoints.signup, async (req, res) => {
+	const dados = req.query;
 
-// router.post(endPoints.cadastrar, async (req, res) => {
-// 	res.json('Cadastrar Post');
-// });
+	const { emailJaUtilizado, usernameJaUtilizado } =
+		await userService.createUser(dados);
 
-router.get(endPoints.cadastrar, async (req, res) => {
-	const id = await service.cadastrar(req.query);
-	res.json(id);
+	if (emailJaUtilizado) {
+		res.redirect(endpoints.renderSignupEmailerr);
+	} else if (usernameJaUtilizado) {
+		res.redirect(endpoints.renderSignupUsernameerr);
+	} else {
+		res.redirect(endpoints.renderLogin);
+	}
 });
 
 module.exports = router;

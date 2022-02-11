@@ -5,10 +5,10 @@ const path = require('path');
 const connectionTest = require('./config/database').connectionTest;
 
 app.use(express.json());
-// app.use('/', require('./routes/renderRouter'));
+app.use('/', require('./routes/renderRouter'));
 app.use('/', require('./routes/userRouter'));
-// app.use('/', require('./router/userRouter'));
-// app.use('/', require('./router/postRouter'));
+app.use('/', require('./routes/postRouter'));
+app.use('/', require('./routes/auxRouter'));
 
 //Config para acessar o arquivo CSS => C:\Users\bruno.heineck\Projetos\NodeJs SCD\api\server\views\styles\
 app.use(express.static(__dirname + '/views'));

@@ -1,102 +1,85 @@
 const router = require('express').Router();
 const cookieParser = require('cookie-parser');
-const { endPoints } = require('../consts');
-const { setCookies, clearCookies } = require('../utils/utils');
+const { endpoints } = require('../consts');
+const postService = require('../service/postService');
+const { setCookies, clearCookies, request } = require('../utils/utils');
 router.use(cookieParser());
 
+const renderData = {
+	//login
+	formActionLogin: endpoints.login,
+	formMethodLogin: 'get',
+
+	//Signup
+	formActionSignup: endpoints.signup,
+	formMethodSignup: 'get',
+
+	//CreatePost
+	formActionCreatePost: endpoints.createPost,
+	formMethodCreatePost: 'get',
+
+	endpointPaginaInicial: endpoints.renderPaginaInicial,
+
+	endpointSignup: endpoints.renderSignup,
+	endpointLogin: endpoints.renderLogin,
+	endPointLogout: endpoints.logout,
+	endPointCreatePost: endpoints.renderCreatePost,
+	endpointPaginaInicial: endpoints.renderPaginaInicial,
+};
+
 router.get('/', async (req, res, next) => {
-	const solicitandoLogoff = req.url.endsWith(endPoints.logoff);
-
-	if (solicitandoLogoff) clearCookies(req.cookies, res, '/');
+	const logout = req.url.endsWith(endpoints.logout);
+	if (logout) clearCookies(req.cookies, res, '/');
 	else {
-		res.render('initial_page', {
-			logado: false,
-			nome: '',
+		const { usr_username, usr_id } = req.cookies;
 
-			endPointLogoff: '',
-			hrefCadastrar: '',
-			posts: '',
-		});
+		const { rows } = await postService.getAllPost();
+
+		renderData.logado = Boolean(usr_username);
+		renderData.username = usr_username;
+		renderData.posts = rows;
+
+		res.render('initial_page', renderData);
 	}
 });
 
-// router.get('/login', async (req, res) => {
-// 	const jaLogado = req.cookies;
+router.get(endpoints.renderLogin, async (req, res, next) => {
+	const { usr_username } = req.cookies;
+	const logado = Boolean(usr_username);
+	const loginError = req.url.includes('loginerr');
+	const userNotFound = req.url.includes('usernotfound');
 
-// 	const email = req.query.email;
-// 	const senha = req.query.senha;
-// 	const lembrarDeMim = req.query.lembrarDeMim;
+	renderData.loginErrorMessage =
+		loginError && userNotFound
+			? 'Usuário não encontrado'
+			: loginError
+			? 'Login Inválido'
+			: '';
 
-// 	const loginErr = req.url.includes('loginerr');
-// 	const requestLogin = req.url.includes('email');
-// 	const loginErrUserEncontrado = req.url.endsWith('usernotfound');
-
-// 	const jaLogado = req.cookies?.username;
-
-// 	const loginErrorMensagem = loginErrUserEncontrado
-// 		? 'Usuário não encontrado'
-// 		: 'Login Incorreto';
-
-// 	//Realiza a atribuição dos cookies
-// 	const setCookie = response => {
-// 		res.clearCookie('username');
-// 		res.clearCookie('ud_nome');
-
-// 		const { rowsLogin, userEncontrado } = response;
-
-// 		console.log(rowsLogin);
-
-// 		if (rowsLogin) {
-// 			res.cookie('username', rowsLogin.usr_username);
-// 			res.cookie('admin', Boolean(rowsLogin.usr_admin));
-// 			res.cookie('id', rowsLogin.usr_id);
-// 			res.cookie('response', rowsLogin);
-// 			res.redirect('/');
-// 		} else {
-// 			res.redirect(
-// 				userEncontrado
-// 					? endPointLoginErr
-// 					: endPointloginErrUserEncontrado
-// 			);
-// 		}
-// 	};
-
-// 	if (jaLogado) res.redirect('/');
-// 	else if (requestLogin) {
-// 		const response = await service.login(email, senha);
-// 		setCookie(response);
-// 	} else {
-// 		res.render('login', {
-// 			loginError: loginErr ? loginErrorMensagem : '',
-// 			hrefCadastrar: hrefCadastrar,
-// 			actionLogin: actionLogin,
-// 		});
-// 	}
-// });
-
-router.get('/setCookies', async (req, res) => {
-	const obj = {
-		a: 'aa',
-		b: 'bb',
-		c: 'cc',
-		d: 'dd',
-		e: 'ee',
-	};
-
-	setCookies(obj, res);
-	res.end();
+	logado
+		? res.redirect(endpoints.renderPaginaInicial)
+		: res.render('login', renderData);
 });
 
-router.get('/clearCookies', async (req, res) => {
-	const obj = {
-		a: 'aa',
-		b: 'bb',
-		c: 'cc',
-		d: 'dd',
-		e: 'ee',
-	};
-	clearCookies(obj, res);
-	res.end();
+router.get(endpoints.renderSignup, async (req, res) => {
+	const { usr_username } = req.cookies;
+	const logado = Boolean(usr_username);
+	const emailErr = req.url.includes('emailerr');
+	const usernameErr = req.url.includes('usernameerr');
+
+	renderData.signupErrorMessage = emailErr
+		? 'E-mail já cadastrado'
+		: usernameErr
+		? 'Username já cadastrado'
+		: '';
+
+	logado
+		? res.redirect(endpoints.renderPaginaInicial)
+		: res.render('signup', renderData);
+});
+
+router.get(endpoints.renderCreatePost, async (req, res) => {
+	res.render('create_post', renderData);
 });
 
 module.exports = router;
