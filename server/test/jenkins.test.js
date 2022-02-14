@@ -25,29 +25,31 @@ afterEach(async () => {
 
 describe('Jenkins | Quality Gate', () => {
 	describe('Vuln method attribute', () => {
-		test(`Deve existir um rota para /login utilizando o método "post"`, async () => {
-			const { status } = await request(
-				endpoints.realizarLogin,
+		test('Deve existir um rota para /createpost utilizando o método "post"', async () => {
+			const { status, statusText } = await request(
+				endpoints.createPost,
 				'post',
 				''
 			);
-			expect(status).not.toBe(404);
-			// expect(response.statusText).not.toBe('Not Found');
-		});
-		test('Deve existir um rota para /cadastrar utilizando o método "post"', async () => {
-			const { status } = await request(
-				endpoints.realizarCadastro,
-				'post',
-				''
-			);
-			expect(status).not.toBe(404);
-			// expect(response.statusText).not.toBe('Not Found');
+
+			expect(status).toBe(201);
+			expect(statusText).toBe('Created');
 		});
 
-		test('Deve existir um rota para /createpost utilizando o método "post"', async () => {
-			const { status } = await request(endpoints.createPost, 'post', '');
+		test(`Deve existir um rota para /login utilizando o método "post"`, async () => {
+			const { status } = await request(endpoints.login, 'post', '');
 			expect(status).not.toBe(404);
-			// expect(response.statusText).not.toBe('Not Found');
+		});
+
+		test('Deve existir um rota para /signup utilizando o método "post"', async () => {
+			const { status, statusText } = await request(
+				endpoints.signup,
+				'post',
+				''
+			);
+
+			expect(status).toBe(201);
+			expect(statusText).toBe('Created');
 		});
 	});
 
@@ -60,16 +62,14 @@ describe('Jenkins | Quality Gate', () => {
 			const email = '';
 			const senha = "' OR TRUE --";
 
-			const { rowCount } = await userService.login(email, senha);
+			const { rowCount: sucessoLoginComSQLi } = await userService.login(
+				email,
+				senha
+			);
 
-			expect(rowCount).toBe(0);
+			expect(sucessoLoginComSQLi).toBe(false);
 		});
 	});
-
-	// describe('Vuln Authenticate', () => {
-	// 	test('Re-registration', () => {});
-	// 	test('No Auth', () => {});
-	// });
 
 	describe('Vuln XSS', () => {
 		test('Deve sanetizar os dados ao criar um novo post', async () => {
@@ -79,16 +79,29 @@ describe('Jenkins | Quality Gate', () => {
 
 			const postDados = fakePost();
 			postDados.usuario = idUser;
-			postDados.titulo = '<script>alert("XSS")</script>';
+			postDados.titulo = '<script>console.log("XSS")</script>';
 
 			await postService.createPost(postDados);
 
 			const { rows } = await postService.getAllPost();
 
-			console.log(rows);
+			expect(rows[0].posts_titulo).toContain(
+				'&#60;script&#62;console.log(&#34;XSS&#34;)&#60;/script&#62;'
+			);
+			expect(rows[0].posts_titulo).not.toContain(
+				'<script>console.log("XSS")</script>'
+			);
+		});
+	});
 
-			expect(rows[0].posts_titulo).toContain('&lt;script&gt;');
-			expect(rows[0].posts_titulo).not.toContain('<script>');
+	describe('Vuln senha salva em texto limpo', () => {
+		test('Deve usar um hash e salt para salvar a senha no banco de dados', async () => {
+			const dados = fakeUser();
+			const usr_id = await userService.createUser(dados);
+
+			const { rows } = await utilservice.getUserById(usr_id);
+
+			expect(rows[0].usr_senha).not.toBe(dados.senha);
 		});
 	});
 });
