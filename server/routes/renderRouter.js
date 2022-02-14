@@ -79,7 +79,14 @@ router.get(endpoints.renderSignup, async (req, res) => {
 });
 
 router.get(endpoints.renderCreatePost, async (req, res) => {
-	res.render('create_post', renderData);
+	const { usr_username } = req.cookies;
+	const logado = Boolean(usr_username);
+
+	console.log(usr_username);
+
+	logado
+		? res.render('create_post', renderData)
+		: res.redirect(endpoints.login);
 });
 
 module.exports = router;

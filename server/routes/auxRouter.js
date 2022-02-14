@@ -3,11 +3,11 @@ const { fakePost } = require('../utils/fakePost');
 const { fakeUser } = require('../utils/fakeUser');
 const postService = require('../service/postService');
 const userService = require('../service/userService');
-const res = require('express/lib/response');
 
 router.get('/aux/fake/createPost', async (req, res) => {
 	const fakePostData = fakePost();
-	fakePostData.usuario = 18;
+	const { usr_id } = await req.query;
+	fakePostData.usuario = usr_id;
 	fakePostData.privado = false;
 
 	const post_id = await postService.createPost(fakePostData);
