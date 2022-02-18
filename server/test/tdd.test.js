@@ -306,32 +306,32 @@ describe('Test Driven Development', () => {
 			expect(rows[0].usr_email).toBe(dados.email);
 			expect(rows[0].usr_senha).toBe(dados.senha);
 		});
-		test('Não deve realizar o login com credenciais inválidas ', async () => {
+		test('Não deve realizar o login com credenciais inválidas', async () => {
 			const dados = fakeUser();
 			await userService.createUser(dados);
 
 			const { email, senha } = dados;
 
-			const { rows, userFound, rowCount } = await userService.login(
-				'inválido',
-				senha
-			);
+			const { rowCount: loginSucessoSenhaIncorreta } =
+				await userService.login(email, 'senha incorreta');
 
-			expect(userFound).toBe(false);
+			const { rowCount: loginSucessoEmailIncorreto } =
+				await userService.login('email incorreto', senha);
+
+			expect(Boolean(loginSucessoSenhaIncorreta)).toBe(false);
+			expect(Boolean(loginSucessoEmailIncorreto)).toBe(false);
 		});
 	});
 
 	describe('RENDER', () => {
 		test('Deve renderizar na tela "Login Inválido" ao tentar login e senha estiver incorreta.', async () => {
-			const response = await request(endpoints.renderLoginerr);
+			const response = await request(endpoints.loginerr);
 
-			expect(response.data).toContain('Login Inválido');
+			expect(response.data).toContain('Senha incorreta');
 		});
 
 		test('Deve renderizar na tela "Usuário não encontrado" ao tentar login e usuário não existir.', async () => {
-			const response = await request(
-				endpoints.renderLoginerrusernaoencontrado
-			);
+			const response = await request(endpoints.loginerrusernaoencontrado);
 
 			expect(response.data).toContain('Usuário não encontrado');
 		});

@@ -1,4 +1,14 @@
 const data = require('../data/postData');
+const { escape } = require('../utils/utils');
+
+// {
+// 	"dadosPost": {
+// 		"titulo": "titulo",
+// 		"pais": "pais",
+// 		"usuario": "usuario",
+// 		"fotografo": "fotografo"
+// 	}
+// }
 
 exports.createPost = async dados => {
 	return await data.createPost(dados);

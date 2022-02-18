@@ -5,7 +5,10 @@ const utilservice = require('../service/utilService');
 const { endpoints } = require('../consts');
 const { fakeUser } = require('../utils/fakeUser');
 const { fakePost } = require('../utils/fakePost');
+const { default: axios } = require('axios');
 const dataBase = require('../config/database').pool;
+const fetch = require('node-fetch');
+
 require('dotenv/config');
 
 beforeAll(async () => {
@@ -24,10 +27,11 @@ afterEach(async () => {
 });
 
 describe('Jenkins | Quality Gate', () => {
-	describe('Vuln method attribute', () => {
-		test('Deve existir um rota para /createpost utilizando o método "post"', async () => {
+	describe('Vuln: Method attribute', () => {
+		test(`Deve existir um rota para /createpost utilizando o método "post"
+		path: routes > postsRouter`, async () => {
 			const { status, statusText } = await request(
-				endpoints.createPost,
+				'/api/createpost',
 				'post',
 				''
 			);
@@ -36,14 +40,16 @@ describe('Jenkins | Quality Gate', () => {
 			expect(statusText).toBe('Created');
 		});
 
-		test(`Deve existir um rota para /login utilizando o método "post"`, async () => {
-			const { status } = await request(endpoints.login, 'post', '');
+		test(`Deve existir um rota para /login utilizando o método "post" 
+		path: routes > userRouter`, async () => {
+			const { status } = await request('/api/login', 'post', '');
 			expect(status).not.toBe(404);
 		});
 
-		test('Deve existir um rota para /signup utilizando o método "post"', async () => {
+		test(`Deve existir um rota para /signup utilizando o método "post" 
+		pauth: routes > userRouter`, async () => {
 			const { status, statusText } = await request(
-				endpoints.signup,
+				'/api/signup',
 				'post',
 				''
 			);
@@ -53,7 +59,7 @@ describe('Jenkins | Quality Gate', () => {
 		});
 	});
 
-	describe('Vuln SQL Injection', () => {
+	describe('Vuln: SQL Injection', () => {
 		test('Deve sanitizar os dados de login antes de executar a query', async () => {
 			const dados = fakeUser();
 
@@ -71,7 +77,7 @@ describe('Jenkins | Quality Gate', () => {
 		});
 	});
 
-	describe('Vuln XSS', () => {
+	describe('Vuln: Cross-site Scripting (XSS)', () => {
 		test('Deve sanetizar os dados ao criar um novo post', async () => {
 			const userDados = fakeUser();
 
@@ -94,7 +100,7 @@ describe('Jenkins | Quality Gate', () => {
 		});
 	});
 
-	describe('Vuln senha salva em texto limpo', () => {
+	describe('Vuln: Senha salva em texto limpo', () => {
 		test('Deve usar um hash e salt para salvar a senha no banco de dados', async () => {
 			const dados = fakeUser();
 			const usr_id = await userService.createUser(dados);
@@ -102,6 +108,33 @@ describe('Jenkins | Quality Gate', () => {
 			const { rows } = await utilservice.getUserById(usr_id);
 
 			expect(rows[0].usr_senha).not.toBe(dados.senha);
+		});
+	});
+
+	describe.only('asgyudags', () => {
+		test('jafiuydusfbia', async () => {
+			const dados = fakeUser();
+			const usr_id = await userService.createUser(dados);
+
+			const userDados = fakeUser();
+
+			const userSignup = new URLSearchParams(userDados);
+
+			await request(`/api/signup?${userSignup}`, 'get', '');
+
+			const userLogin = new URLSearchParams({
+				email: userDados.username,
+				senha: userDados.senha,
+			});
+
+			const response = await fetch(
+				`http://localhost:3000/login?${userLogin}`
+			);
+
+			console.log(response.headers.raw()['set-cookie']);
+			// const body = await response.text();
+
+			// console.log(body);
 		});
 	});
 });

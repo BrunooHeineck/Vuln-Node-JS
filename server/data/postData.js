@@ -1,6 +1,6 @@
 const dataBase = require('../config/database').pool;
 
-exports.createPost = async dados => {
+exports.createPost = async dadosPost => {
 	const { rows } = await dataBase.query(
 		`
 	INSERT INTO posts 
@@ -13,15 +13,14 @@ exports.createPost = async dados => {
 	) 
 	VALUES 
 	(
-		'${dados.titulo}',
-		'${dados.pais}',
-		'${dados.fotografo}',
-		'${dados.usuario}',
+		'${dadosPost.titulo}',
+		'${dadosPost.pais}',
+		'${dadosPost.fotografo}',
+		'${dadosPost.usuario}',
 		'false'
 		) 
 		RETURNING posts_id
 		`
-		// '${dados.privado}'
 	);
 
 	return rows[0].posts_id;
@@ -36,14 +35,14 @@ exports.getAllPost = async () => {
 	return await dataBase.query(`SELECT * FROM posts`);
 };
 
-exports.updatePost = async (posts_id, dados) => {
+exports.updatePost = async (posts_id, dadosPost) => {
 	return dataBase.query(`
 	UPDATE posts SET 
 
-		posts_titulo = '${dados.titulo}',
-		posts_pais = '${dados.pais}',
-		posts_fotografo = '${dados.fotografo}',
-		posts_privado = '${dados.privado}'
+		posts_titulo    = '${dadosPost.titulo}',
+		posts_pais      = '${dadosPost.pais}',
+		posts_fotografo = '${dadosPost.fotografo}',
+		posts_privado   = '${dadosPost.privado}'
 
 	WHERE 
 		posts_id = ${posts_id}

@@ -1,21 +1,31 @@
 const data = require('../data/userData');
 const utilService = require('../service/utilService');
 
-exports.createUser = async dados => {
-	const { rowCount: emailJaUtilizado } = await utilService.getUserByEmail(
-		dados.email
-	);
+// {
+// 	"dadosUser": {
+// 			"nome": "nome",
+// 			"sobrenome": "sobrenome",
+// 			"telefone": "telefone",
+// 			"username": "username",
+// 			"email": "email",
+// 			"senha": "senha"
+// }
 
-	const { rowCount: usernameJaUtilizado } =
-		await utilService.getUserByUsername(dados.username);
+exports.createUser = async dadosUser => {
+	const {
+		emailEncontrado: emailJaUtilizado,
+		usernameEncontrado: usernameJaUtilizado,
+	} = await validaEmailUsername(dadosUser.email, dadosUser.username);
 
-	if (usernameJaUtilizado || emailJaUtilizado) {
-		return { usernameJaUtilizado, emailJaUtilizado };
-	} else return await data.createUser(dados);
+	const userJaCadastrado = Boolean(emailJaUtilizado || usernameJaUtilizado);
+
+	return userJaCadastrado
+		? { usernameJaUtilizado, emailJaUtilizado }
+		: await data.createUser(dadosUser);
 };
 
-exports.updateUser = async (usr_id, dados) => {
-	return await data.updateUser(usr_id, dados);
+exports.updateUser = async (usr_id, dadosUser) => {
+	return await data.updateUser(usr_id, dadosUser);
 };
 
 exports.deleteUser = async usr_id => {
@@ -23,20 +33,23 @@ exports.deleteUser = async usr_id => {
 };
 
 exports.login = async (email, senha) => {
-	const userEncontrado = await validaEmailUsername(email);
+	const { emailEncontrado, usernameEncontrado } = await validaEmailUsername(
+		email
+	);
+	const userEncontrado = Boolean(emailEncontrado || usernameEncontrado);
 
-	const response = await data.login(email, senha);
-	response.userFound = userEncontrado;
-
-	return response;
+	return userEncontrado
+		? ({ rows, rowCount } = await data.login(email, senha))
+		: { userNotFound: true };
 };
 
-async function validaEmailUsername(email) {
+async function validaEmailUsername(email, username) {
 	const { rowCount: emailEncontrado } = await utilService.getUserByEmail(
 		email
 	);
-	const { rowCount: usernameEncontrado } =
-		await utilService.getUserByUsername(email);
 
-	return Boolean(emailEncontrado || usernameEncontrado);
+	const { rowCount: usernameEncontrado } =
+		await utilService.getUserByUsername(username ?? email);
+
+	return { emailEncontrado, usernameEncontrado };
 }

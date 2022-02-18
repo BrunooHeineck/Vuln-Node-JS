@@ -6,7 +6,7 @@ const userService = require('../service/userService');
 
 router.get('/aux/fake/createPost', async (req, res) => {
 	const fakePostData = fakePost();
-	const { usr_id } = await req.query;
+	const { usr_id } = req.query;
 	fakePostData.usuario = usr_id;
 	fakePostData.privado = false;
 

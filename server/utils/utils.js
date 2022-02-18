@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { redirect } = require('express/lib/response');
 
 exports.request = (endPoint, method, data) => {
 	const URL_PADRAO = 'http://localhost:3000';
@@ -14,7 +15,7 @@ exports.request = (endPoint, method, data) => {
 
 exports.clearCookies = (cookies, res, redirect) => {
 	Object.keys(cookies).forEach(cookie => res.clearCookie(cookie));
-	if (redirect) res.redirect(redirect);
+	redirect && res.redirect(redirect);
 };
 
 exports.setCookies = (dados, res) => {

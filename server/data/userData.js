@@ -1,6 +1,6 @@
 const dataBase = require('../config/database').pool;
 
-exports.createUser = async dados => {
+exports.createUser = async dadosUser => {
 	const { rows } = await dataBase.query(
 		`
 	INSERT INTO users 
@@ -14,12 +14,12 @@ exports.createUser = async dados => {
 	) 
 	VALUES 
 	(
-		'${dados.nome}',
-		'${dados.sobrenome}',
-		'${dados.telefone}',
-		'${dados.username}',
-		'${dados.email}',
-		'${dados.senha}'
+		'${dadosUser.nome}',
+		'${dadosUser.sobrenome}',
+		'${dadosUser.telefone}',
+		'${dadosUser.username}',
+		'${dadosUser.email}',
+		'${dadosUser.senha}'
 	) 
 	RETURNING usr_id
 	`
@@ -28,15 +28,15 @@ exports.createUser = async dados => {
 	return rows[0].usr_id;
 };
 
-exports.updateUser = async (usr_id, dados) => {
+exports.updateUser = async (usr_id, dadosUser) => {
 	return dataBase.query(
 		`
 	UPDATE users SET 
-		usr_nome = '${dados.nome}',
-		usr_sobrenome = '${dados.sobrenome}',
-		usr_telefone = '${dados.telefone}',
-		usr_username = '${dados.username}',
-		usr_email  = '${dados.email}'
+		usr_nome      = '${dadosUser.nome}',
+		usr_sobrenome = '${dadosUser.sobrenome}',
+		usr_telefone  = '${dadosUser.telefone}',
+		usr_username  = '${dadosUser.username}',
+		usr_email     = '${dadosUser.email}'
 	WHERE 
 		usr_id = ${usr_id}
 	`

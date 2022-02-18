@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const cookieParser = require('cookie-parser');
+const { response } = require('express');
 const { endpoints } = require('../consts');
 const postService = require('../service/postService');
 const { setCookies, clearCookies, request } = require('../utils/utils');
@@ -7,31 +8,31 @@ router.use(cookieParser());
 
 const renderData = {
 	//login
-	formActionLogin: endpoints.login,
+	formActionLogin: '/login',
 	formMethodLogin: 'get',
 
 	//Signup
-	formActionSignup: endpoints.signup,
+	formActionSignup: endpoints.apiSignup,
 	formMethodSignup: 'get',
 
 	//CreatePost
-	formActionCreatePost: endpoints.createPost,
+	formActionCreatePost: endpoints.apiCreatePost,
 	formMethodCreatePost: 'get',
 
-	endpointPaginaInicial: endpoints.renderPaginaInicial,
+	endpointPaginaInicial: endpoints.paginaInicial,
 
-	endpointSignup: endpoints.renderSignup,
-	endpointLogin: endpoints.renderLogin,
+	endpointSignup: endpoints.signup,
+	endpointLogin: '/login',
 	endPointLogout: endpoints.logout,
-	endPointCreatePost: endpoints.renderCreatePost,
-	endpointPaginaInicial: endpoints.renderPaginaInicial,
+	endPointCreatePost: endpoints.createPost,
+	endpointPaginaInicial: endpoints.paginaInicial,
 };
 
 router.get('/', async (req, res, next) => {
 	const logout = req.url.endsWith(endpoints.logout);
 	if (logout) clearCookies(req.cookies, res, '/');
 	else {
-		const { usr_username, usr_id } = req.cookies;
+		const { usr_username } = req.cookies;
 
 		const { rows } = await postService.getAllPost();
 
@@ -43,25 +44,36 @@ router.get('/', async (req, res, next) => {
 	}
 });
 
-router.get(endpoints.renderLogin, async (req, res, next) => {
+router.get('/login', async (req, res, next) => {
 	const { usr_username } = req.cookies;
 	const logado = Boolean(usr_username);
 	const loginError = req.url.includes('loginerr');
 	const userNotFound = req.url.includes('usernotfound');
+	const loginRequest = req.url.includes('email') && req.url.includes('senha');
 
-	renderData.loginErrorMessage =
-		loginError && userNotFound
-			? 'Usuário não encontrado'
-			: loginError
-			? 'Login Inválido'
-			: '';
+	if (loginRequest) {
+		const { email, senha } = req.query;
+		const params = new URLSearchParams({ email, senha });
+		const { data } = await request(`/api/login?${params}`, 'get', '');
 
-	logado
-		? res.redirect(endpoints.renderPaginaInicial)
-		: res.render('login', renderData);
+		setCookies(data.userInfo, res);
+		clearCookies(req.cookies, res);
+		res.redirect('/');
+	} else {
+		renderData.loginErrorMessage =
+			loginError && userNotFound
+				? 'Usuário não encontrado'
+				: loginError
+				? 'Senha incorreta'
+				: '';
+
+		logado
+			? res.redirect(endpoints.paginaInicial)
+			: res.render('login', renderData);
+	}
 });
 
-router.get(endpoints.renderSignup, async (req, res) => {
+router.get('/signup', async (req, res) => {
 	const { usr_username } = req.cookies;
 	const logado = Boolean(usr_username);
 	const emailErr = req.url.includes('emailerr');
@@ -74,19 +86,15 @@ router.get(endpoints.renderSignup, async (req, res) => {
 		: '';
 
 	logado
-		? res.redirect(endpoints.renderPaginaInicial)
+		? res.redirect(endpoints.paginaInicial)
 		: res.render('signup', renderData);
 });
 
-router.get(endpoints.renderCreatePost, async (req, res) => {
+router.get('/createpost', async (req, res) => {
 	const { usr_username } = req.cookies;
 	const logado = Boolean(usr_username);
 
-	console.log(usr_username);
-
-	logado
-		? res.render('create_post', renderData)
-		: res.redirect(endpoints.login);
+	logado ? res.render('create_post', renderData) : res.redirect('/login');
 });
 
 module.exports = router;

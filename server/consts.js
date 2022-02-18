@@ -13,19 +13,19 @@ exports.getEndPoints = {
 };
 
 exports.endpoints = {
-	renderLogin: '/login',
+	login: '/login',
 	renderLogout: '/logout',
-	renderSignup: '/signup',
-	renderPaginaInicial: '/',
-	renderLoginerr: '/login?loginerr',
-	renderLoginerrusernaoencontrado: '/login?loginerr?usernotfound',
-	renderSignupEmailerr: '/signup?signup?emailerr',
-	renderSignupUsernameerr: '/signup?signup?usernameerr',
-	renderCreatePost: '/createpost',
+	signup: '/signup',
+	paginaInicial: '/',
+	loginerr: '/login?loginerr',
+	loginerrusernaoencontrado: '/login?loginerr?usernotfound',
+	signupEmailerr: '/signup?signup?emailerr',
+	signupUsernameerr: '/signup?signup?usernameerr',
+	createPost: '/createpost',
 
 	logout: '/?logout',
 
-	login: '/api/login',
-	signup: '/api/signup',
-	createPost: '/api/createpost',
+	apiLogin: '/api/login',
+	apiSignup: '/api/signup',
+	apiCreatePost: '/api/createpost',
 };
