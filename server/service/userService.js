@@ -48,8 +48,15 @@ async function validaEmailUsername(email, username) {
 		email
 	);
 
+	var x;
+
+	if (email) x = email;
+	else x = username;
 	const { rowCount: usernameEncontrado } =
-		await utilService.getUserByUsername(username ?? email);
+		await utilService.getUserByUsername(x);
+
+	// const { rowCount: usernameEncontrado } =
+	// 	await utilService.getUserByUsername(username ?? email);
 
 	return { emailEncontrado, usernameEncontrado };
 }
