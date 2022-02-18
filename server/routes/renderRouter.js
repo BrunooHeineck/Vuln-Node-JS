@@ -56,9 +56,12 @@ router.get('/login', async (req, res, next) => {
 		const params = new URLSearchParams({ email, senha });
 		const { data } = await request(`/api/login?${params}`, 'get', '');
 
-		clearCookies(req.cookies, res);
-		setCookies(data.userInfo, res);
-		res.redirect('/');
+		if (data.userInfo) {
+			clearCookies(req.cookies, res);
+			setCookies(data.userInfo, res);
+		}
+
+		res.redirect(data.redirect);
 	} else {
 		renderData.loginErrorMessage =
 			loginError && userNotFound
@@ -78,16 +81,24 @@ router.get('/signup', async (req, res) => {
 	const logado = Boolean(usr_username);
 	const emailErr = req.url.includes('emailerr');
 	const usernameErr = req.url.includes('usernameerr');
+	const userCreateRequest = req.url.includes('email');
 
-	renderData.signupErrorMessage = emailErr
-		? 'E-mail já cadastrado'
-		: usernameErr
-		? 'Username já cadastrado'
-		: '';
+	if (userCreateRequest) {
+		const dados = req.query;
+		const params = new URLSearchParams({ dados });
+		const { data } = await request(`/api/signup?${params}`, 'get', '');
+		res.redirect(data.redirect);
+	} else {
+		renderData.signupErrorMessage = emailErr
+			? 'E-mail já cadastrado'
+			: usernameErr
+			? 'Username já cadastrado'
+			: '';
 
-	logado
-		? res.redirect(endpoints.paginaInicial)
-		: res.render('signup', renderData);
+		logado
+			? res.redirect(endpoints.paginaInicial)
+			: res.render('signup', renderData);
+	}
 });
 
 router.get('/createpost', async (req, res) => {

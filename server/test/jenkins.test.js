@@ -47,7 +47,7 @@ describe('Jenkins | Quality Gate', () => {
 		});
 
 		test(`Deve existir um rota para /signup utilizando o método "post" 
-		pauth: routes > userRouter`, async () => {
+		path: routes > userRouter`, async () => {
 			const { status, statusText } = await request(
 				'/api/signup',
 				'post',
@@ -132,9 +132,6 @@ describe('Jenkins | Quality Gate', () => {
 			);
 
 			console.log(response.headers.raw()['set-cookie']);
-			// const body = await response.text();
-
-			// console.log(body);
 		});
 	});
 });
