@@ -56,8 +56,8 @@ router.get('/login', async (req, res, next) => {
 		const params = new URLSearchParams({ email, senha });
 		const { data } = await request(`/api/login?${params}`, 'get', '');
 
-		setCookies(data.userInfo, res);
 		clearCookies(req.cookies, res);
+		setCookies(data.userInfo, res);
 		res.redirect('/');
 	} else {
 		renderData.loginErrorMessage =
