@@ -6,9 +6,9 @@ const connectionTest = require('./config/database').connectionTest;
 
 app.use(express.json());
 app.use('/', require('./routes/renderRouter'));
-app.use('/', require('./routes/apiUserRouter'));
-app.use('/', require('./routes/apiPostRouter'));
-app.use('/', require('./routes/auxRouter'));
+app.use('/', require('./routes/api/apiUserRouter'));
+app.use('/', require('./routes/api/apiPostRouter'));
+app.use('/', require('./test/mock/fakeRouter'));
 app.use('/', require('./test/routerTest'));
 
 //Config para acessar o arquivo CSS => C:\Users\bruno.heineck\Projetos\NodeJs SCD\api\server\views\styles\
@@ -21,6 +21,12 @@ const porta = process.env.PORT || 3000;
 app.listen(porta, () => {
 	console.log(`Sevidor Rodando na porta ${porta} => ${__dirname}`);
 	connectionTest();
+});
+
+app.use((err, req, res, next) => {
+	console.log('\nSOMETHING WENT WRONG\n');
+	console.log(err);
+	res.redirect('/');
 });
 
 // app.use((error, req, res, next) => {

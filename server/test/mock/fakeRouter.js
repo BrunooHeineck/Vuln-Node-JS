@@ -1,8 +1,7 @@
 const router = require('express').Router();
-const { fakePost } = require('../utils/fakePost');
-const { fakeUser } = require('../utils/fakeUser');
-const postService = require('../service/postService');
-const userService = require('../service/userService');
+const { fakeUser, fakePost } = require('./fake');
+const postService = require('../../service/postService');
+const userService = require('../../service/userService');
 
 router.get('/aux/fake/createPost', async (req, res) => {
 	const fakePostData = fakePost();

@@ -2,10 +2,7 @@ const { request } = require('../utils/utils');
 const userService = require('../service/userService');
 const postService = require('../service/postService');
 const utilservice = require('../service/utilService');
-const { endpoints } = require('../consts');
-const { fakeUser } = require('../utils/fakeUser');
-const { fakePost } = require('../utils/fakePost');
-const { default: axios } = require('axios');
+const { fakeUser, fakePost } = require('../utils/fake');
 const dataBase = require('../config/database').pool;
 const fetch = require('node-fetch');
 

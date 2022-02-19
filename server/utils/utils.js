@@ -21,3 +21,6 @@ exports.clearCookies = (cookies, res, redirect) => {
 exports.setCookies = (dados, res) => {
 	Object.entries(dados).forEach(([key, value]) => res.cookie(key, value));
 };
+
+exports.errHandling = fn => (req, res, next) =>
+	Promise.resolve(fn(req, res, next)).catch(next);

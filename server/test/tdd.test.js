@@ -1,8 +1,7 @@
 const userService = require('../service/userService');
 const postService = require('../service/postService');
 const utilservice = require('../service/utilService');
-const { fakeUser } = require('../utils/fakeUser');
-const { fakePost } = require('../utils/fakePost');
+const { fakeUser, fakePost } = require('../utils/utils');
 const { request } = require('../utils/utils');
 const { endpoints } = require('../consts');
 const dataBase = require('../config/database').pool;
