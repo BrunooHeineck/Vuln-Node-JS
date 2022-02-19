@@ -43,20 +43,13 @@ exports.login = async (email, senha) => {
 		: { userNotFound: true };
 };
 
-async function validaEmailUsername(email, username) {
+async function validaEmailUsername(email, username = email) {
 	const { rowCount: emailEncontrado } = await utilService.getUserByEmail(
 		email
 	);
 
-	var x;
-
-	if (email) x = email;
-	else x = username;
 	const { rowCount: usernameEncontrado } =
-		await utilService.getUserByUsername(x);
-
-	// const { rowCount: usernameEncontrado } =
-	// 	await utilService.getUserByUsername(username ?? email);
+		await utilService.getUserByUsername(username);
 
 	return { emailEncontrado, usernameEncontrado };
 }

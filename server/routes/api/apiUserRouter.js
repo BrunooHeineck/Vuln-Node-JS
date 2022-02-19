@@ -15,26 +15,24 @@ const userService = require('../../service/userService');
 
 router.get(
 	'/api/login',
-	errHandling(
-		errHandling(async (req, res) => {
-			const { email, senha } = req.query;
-			const {
-				rows,
-				userNotFound,
-				rowCount: loginSucesso,
-			} = await userService.login(email, senha);
+	errHandling(async (req, res) => {
+		const { email, senha } = req.query;
+		const {
+			rows,
+			userNotFound,
+			rowCount: loginSucesso,
+		} = await userService.login(email, senha);
 
-			if (loginSucesso) {
-				const userInfo = rows[0];
-				res.json({ redirect: endpoints.paginaInicial, userInfo });
-			} else if (userNotFound) {
-				res.json({ redirect: endpoints.loginerrusernaoencontrado });
-			} else {
-				//userNotFound
-				res.json({ redirect: endpoints.loginerr });
-			}
-		})
-	)
+		if (loginSucesso) {
+			const userInfo = rows[0];
+			res.json({ redirect: '/', userInfo });
+		} else if (userNotFound) {
+			res.json({ redirect: '/login?loginerr?usernotfound' });
+		} else {
+			//userNotFound
+			res.json({ redirect: '/login?loginerr' });
+		}
+	})
 );
 
 router.get(
@@ -44,11 +42,11 @@ router.get(
 			await userService.createUser(req.query);
 
 		if (!emailJaUtilizado && !usernameJaUtilizado) {
-			res.json({ redirect: endpoints.login });
+			res.json({ redirect: '/login' });
 		} else if (usernameJaUtilizado) {
-			res.json({ redirect: endpoints.signupUsernameerr });
+			res.json({ redirect: '/signup?signup?usernameerr' });
 		} else {
-			res.json({ redirect: endpoints.signupEmailerr });
+			res.json({ redirect: '/signup?signup?emailerr' });
 		}
 	})
 );

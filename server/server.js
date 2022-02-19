@@ -5,7 +5,7 @@ const path = require('path');
 const connectionTest = require('./config/database').connectionTest;
 
 app.use(express.json());
-app.use('/', require('./routes/renderRouter'));
+app.use('/', require('./routes/router'));
 app.use('/', require('./routes/api/apiUserRouter'));
 app.use('/', require('./routes/api/apiPostRouter'));
 app.use('/', require('./test/mock/fakeRouter'));

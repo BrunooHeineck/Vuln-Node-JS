@@ -12,23 +12,21 @@ const renderData = {
 	formMethodLogin: 'get',
 
 	//Signup
-	formActionSignup: endpoints.apiSignup,
+	formActionSignup: '/signup',
 	formMethodSignup: 'get',
 
 	//CreatePost
-	formActionCreatePost: endpoints.apiCreatePost,
+	formActionCreatePost: '/createpost',
 	formMethodCreatePost: 'get',
 
-	endpointPaginaInicial: endpoints.paginaInicial,
-
-	endpointSignup: endpoints.signup,
+	endpointSignup: '/signup',
 	endpointLogin: '/login',
-	endPointLogout: endpoints.logout,
-	endPointCreatePost: endpoints.createPost,
-	endpointPaginaInicial: endpoints.paginaInicial,
+	endPointLogout: '/?logout',
+	endPointCreatePost: '/createpost',
+	endpointPaginaInicial: '/',
 };
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
 	const logout = req.url.endsWith(endpoints.logout);
 	if (logout) clearCookies(req.cookies, res, '/');
 	else {
@@ -44,7 +42,7 @@ router.get('/', async (req, res, next) => {
 	}
 });
 
-router.get('/login', async (req, res, next) => {
+router.get('/login', async (req, res) => {
 	const { usr_username } = req.cookies;
 	const logado = Boolean(usr_username);
 	const loginError = req.url.includes('loginerr');
@@ -85,7 +83,7 @@ router.get('/signup', async (req, res) => {
 
 	if (userCreateRequest) {
 		const dados = req.query;
-		const params = new URLSearchParams({ dados });
+		const params = new URLSearchParams(dados);
 		const { data } = await request(`/api/signup?${params}`, 'get', '');
 		res.redirect(data.redirect);
 	} else {
@@ -102,10 +100,19 @@ router.get('/signup', async (req, res) => {
 });
 
 router.get('/createpost', async (req, res) => {
-	const { usr_username } = req.cookies;
-	const logado = Boolean(usr_username);
+	const { usr_id } = req.cookies;
+	const logado = Boolean(usr_id);
+	const postCreateRequest = req.url.includes('titulo');
 
-	logado ? res.render('create_post', renderData) : res.redirect('/login');
+	if (postCreateRequest) {
+		const dados = req.query;
+		dados.usuario = usr_id;
+		const params = new URLSearchParams(dados);
+		const { data } = await request(`/api/createpost?${params}`, 'get', '');
+		res.redirect(data.redirect);
+	} else {
+		logado ? res.render('create_post', renderData) : res.redirect('/login');
+	}
 });
 
 module.exports = router;

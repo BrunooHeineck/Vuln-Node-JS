@@ -4,14 +4,6 @@ exports.getMensagensErro = {
 	500: 'Internal Server Error',
 };
 
-exports.getEndPoints = {
-	loginerr: '/login?loginerr',
-	loginerruserencontrado: '/login?loginerr?usernotfound',
-	login: 'login',
-	cadastrar: 'cadastrar',
-	logoff: '/?logoff',
-};
-
 exports.endpoints = {
 	login: '/login',
 	renderLogout: '/logout',

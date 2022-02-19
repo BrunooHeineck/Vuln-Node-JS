@@ -15,13 +15,8 @@ const { errHandling } = require('../../utils/utils');
 router.get(
 	'/api/createpost',
 	errHandling(async (req, res) => {
-		const dados = req.query;
-		const { usr_id } = req.cookies;
-		dados.usuario = usr_id;
-
-		await postService.createPost(dados);
-
-		res.redirect(endpoints.paginaInicial);
+		await postService.createPost(req.query);
+		res.json({ redirect: '/' });
 	})
 );
 
