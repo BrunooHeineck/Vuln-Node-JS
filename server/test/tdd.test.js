@@ -1,9 +1,28 @@
-const userService = require('../service/userService');
-const postService = require('../service/postService');
-const utilservice = require('../service/utilService');
-const { fakeUser, fakePost } = require('../utils/utils');
+const { fakeUser, fakePost } = require('./mock/fake');
 const { request } = require('../utils/utils');
 const { endpoints } = require('../consts');
+const {
+	getAllUsers,
+	clearAllUsers,
+	getUserById,
+	getUserByEmail,
+	getUserByUsername,
+	clearAllPosts,
+} = require('../service/utilService');
+const {
+	createUser,
+	updateUser,
+	login,
+	deleteUser,
+} = require('../service/userService');
+const {
+	createPost,
+	getAllPost,
+	getPostById,
+	updatePost,
+	deletePost,
+} = require('../service/postService');
+
 const dataBase = require('../config/database').pool;
 require('dotenv/config');
 
@@ -16,8 +35,8 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
-	await utilservice.clearAllPosts();
-	await utilservice.clearAllUsers();
+	await clearAllPosts();
+	await clearAllUsers();
 });
 
 describe('Test Driven Development', () => {
@@ -26,10 +45,10 @@ describe('Test Driven Development', () => {
 			test('Deve criar um novo usuário.', async () => {
 				const dados = fakeUser();
 
-				const id = await userService.createUser(dados);
+				const id = await createUser(dados);
 
-				const { rowCount } = await utilservice.getAllUsers();
-				const { rows } = await utilservice.getUserById(id);
+				const { rowCount } = await getAllUsers();
+				const { rows } = await getUserById(id);
 
 				expect(rowCount).toBe(1);
 				expect(rows[0].usr_nome).toBe(dados.nome);
@@ -43,29 +62,27 @@ describe('Test Driven Development', () => {
 				const dadosEmail = fakeUser();
 				const dadosUsername = fakeUser();
 
-				await userService.createUser(dadosEmail);
-				const { rowCount: quantidadePorEmail } =
-					await utilservice.getAllUsers();
+				await createUser(dadosEmail);
+				const { rowCount: quantidadePorEmail } = await getAllUsers();
 
 				expect(quantidadePorEmail).toBe(1);
 
-				await userService.createUser(dadosEmail);
+				await createUser(dadosEmail);
 				const { rowCount: quantidadePorEmailSecond } =
-					await utilservice.getAllUsers();
+					await getAllUsers();
 
 				expect(quantidadePorEmailSecond).toBe(1);
 
-				await utilservice.clearAllUsers();
+				await clearAllUsers();
 
-				await userService.createUser(dadosUsername);
-				const { rowCount: quantidadeProUsername } =
-					await utilservice.getAllUsers();
+				await createUser(dadosUsername);
+				const { rowCount: quantidadeProUsername } = await getAllUsers();
 
 				expect(quantidadeProUsername).toBe(1);
 
-				await userService.createUser(dadosUsername);
+				await createUser(dadosUsername);
 				const { rowCount: quantidadeProUsernameSecond } =
-					await utilservice.getAllUsers();
+					await getAllUsers();
 
 				expect(quantidadeProUsernameSecond).toBe(1);
 			});
@@ -76,11 +93,11 @@ describe('Test Driven Development', () => {
 				const dados1 = fakeUser();
 				const dados2 = fakeUser();
 
-				await userService.createUser(dados0);
-				await userService.createUser(dados1);
-				await userService.createUser(dados2);
+				await createUser(dados0);
+				await createUser(dados1);
+				await createUser(dados2);
 
-				const { rowCount, rows } = await utilservice.getAllUsers();
+				const { rowCount, rows } = await getAllUsers();
 
 				expect(rowCount).toBe(3);
 				expect(rows[0].usr_nome).toBe(dados0.nome);
@@ -106,8 +123,8 @@ describe('Test Driven Development', () => {
 			});
 			test('Deve retornar o usuário pelo id', async () => {
 				const dados = fakeUser();
-				const id = await userService.createUser(dados);
-				const { rows } = await utilservice.getUserById(id);
+				const id = await createUser(dados);
+				const { rows } = await getUserById(id);
 
 				expect(rows[0].usr_nome).toBe(dados.nome);
 				expect(rows[0].usr_sobrenome).toBe(dados.sobrenome);
@@ -122,14 +139,13 @@ describe('Test Driven Development', () => {
 				const { email } = dadosEmail;
 				const { username } = dadosUsername;
 
-				await userService.createUser(dadosEmail);
-				await userService.createUser(dadosUsername);
+				await createUser(dadosEmail);
+				await createUser(dadosUsername);
 
-				const { rows: rowsEmail } = await utilservice.getUserByEmail(
-					email
+				const { rows: rowsEmail } = await getUserByEmail(email);
+				const { rows: rowsUsername } = await getUserByUsername(
+					username
 				);
-				const { rows: rowsUsername } =
-					await utilservice.getUserByUsername(username);
 
 				expect(rowsEmail[0].usr_nome).toBe(dadosEmail.nome);
 				expect(rowsEmail[0].usr_sobrenome).toBe(dadosEmail.sobrenome);
@@ -154,10 +170,10 @@ describe('Test Driven Development', () => {
 
 				const dadosAtualizados = fakeUser();
 
-				const id = await userService.createUser(dados);
-				await userService.updateUser(id, dadosAtualizados);
+				const id = await createUser(dados);
+				await updateUser(id, dadosAtualizados);
 
-				const { rows } = await utilservice.getUserById(id);
+				const { rows } = await getUserById(id);
 
 				expect(rows[0].usr_nome).toBe(dadosAtualizados.nome);
 				expect(rows[0].usr_sobrenome).toBe(dadosAtualizados.sobrenome);
@@ -171,9 +187,9 @@ describe('Test Driven Development', () => {
 			test('Deve exluir um usuário pelo id.', async () => {
 				const dados = fakeUser();
 
-				const id = await userService.createUser(dados);
-				await userService.deleteUser(id);
-				const { rowCount } = await utilservice.getUserById(id);
+				const id = await createUser(dados);
+				await deleteUser(id);
+				const { rowCount } = await getUserById(id);
 				expect(rowCount).toBe(0);
 			});
 		});
@@ -184,15 +200,15 @@ describe('Test Driven Development', () => {
 			test('Deve criar um novo post.', async () => {
 				const userDados = fakeUser();
 
-				const idUser = await userService.createUser(userDados);
+				const idUser = await createUser(userDados);
 
 				const postDados = fakePost();
 				postDados.usuario = idUser;
 
-				const idPost = await postService.createPost(postDados);
+				const idPost = await createPost(postDados);
 
-				const { rowCount } = await postService.getAllPost();
-				const { rows } = await postService.getPostById(idPost);
+				const { rowCount } = await getAllPost();
+				const { rows } = await getPostById(idPost);
 
 				expect(rowCount).toBe(1);
 				expect(rows[0].posts_titulo).toBe(postDados.titulo);
@@ -208,9 +224,9 @@ describe('Test Driven Development', () => {
 				const userDados1 = fakeUser();
 				const userDados2 = fakeUser();
 
-				const idUser0 = await userService.createUser(userDados0);
-				const idUser1 = await userService.createUser(userDados1);
-				const idUser2 = await userService.createUser(userDados2);
+				const idUser0 = await createUser(userDados0);
+				const idUser1 = await createUser(userDados1);
+				const idUser2 = await createUser(userDados2);
 
 				const postDados0 = fakePost();
 				postDados0.usuario = idUser0;
@@ -219,11 +235,11 @@ describe('Test Driven Development', () => {
 				const postDados2 = fakePost();
 				postDados2.usuario = idUser2;
 
-				await postService.createPost(postDados0);
-				await postService.createPost(postDados1);
-				await postService.createPost(postDados2);
+				await createPost(postDados0);
+				await createPost(postDados1);
+				await createPost(postDados2);
 
-				const { rowCount, rows } = await postService.getAllPost();
+				const { rowCount, rows } = await getAllPost();
 
 				expect(rowCount).toBe(3);
 				expect(rows[0].posts_titulo).toBe(postDados0.titulo);
@@ -248,19 +264,19 @@ describe('Test Driven Development', () => {
 		describe('UPDATE', () => {
 			test('Deve atualizar os dados do post.', async () => {
 				const userDados = fakeUser();
-				const usr_id = await userService.createUser(userDados);
+				const usr_id = await createUser(userDados);
 
 				const postDados = fakePost();
 				postDados.usuario = usr_id;
 
 				const postDadosUpdate = fakePost();
 
-				const post_id = await postService.createPost(postDados);
+				const post_id = await createPost(postDados);
 				postDadosUpdate.privado = false;
 
-				await postService.updatePost(post_id, postDadosUpdate);
+				await updatePost(post_id, postDadosUpdate);
 
-				const { rows } = await postService.getPostById(post_id);
+				const { rows } = await getPostById(post_id);
 
 				expect(rows[0].posts_titulo).toBe(postDadosUpdate.titulo);
 				expect(rows[0].posts_pais).toBe(postDadosUpdate.pais);
@@ -272,16 +288,16 @@ describe('Test Driven Development', () => {
 		describe('DELETE', () => {
 			test('Deve exluir um post pelo id.', async () => {
 				const userDados = fakeUser();
-				const usr_id = await userService.createUser(userDados);
+				const usr_id = await createUser(userDados);
 
 				const postDados = fakePost();
 				postDados.usuario = usr_id;
 
-				const post_id = await postService.createPost(postDados);
+				const post_id = await createPost(postDados);
 
-				await postService.deletePost(post_id);
+				await deletePost(post_id);
 
-				const { rowCount } = await postService.getAllPost();
+				const { rowCount } = await getAllPost();
 
 				expect(rowCount).toBe(0);
 			});
@@ -291,11 +307,10 @@ describe('Test Driven Development', () => {
 	describe('LOGIN', () => {
 		test('Deve realizar o login.', async () => {
 			const dados = fakeUser();
-			const usr_id = await userService.createUser(dados);
-
 			const { email, senha } = dados;
+			const usr_id = await createUser(dados);
 
-			const { rows } = await userService.login(email, senha);
+			const { rows } = await login(email, senha);
 
 			expect(rows[0].usr_id).toBe(usr_id);
 			expect(rows[0].usr_nome).toBe(dados.nome);
@@ -303,19 +318,22 @@ describe('Test Driven Development', () => {
 			expect(rows[0].usr_telefone).toBe(dados.telefone);
 			expect(rows[0].usr_username).toBe(dados.username);
 			expect(rows[0].usr_email).toBe(dados.email);
-			expect(rows[0].usr_senha).toBe(dados.senha);
 		});
 		test('Não deve realizar o login com credenciais inválidas', async () => {
 			const dados = fakeUser();
-			await userService.createUser(dados);
+			await createUser(dados);
 
 			const { email, senha } = dados;
 
-			const { rowCount: loginSucessoSenhaIncorreta } =
-				await userService.login(email, 'senha incorreta');
+			const { rowCount: loginSucessoSenhaIncorreta } = await login(
+				email,
+				'senha incorreta'
+			);
 
-			const { rowCount: loginSucessoEmailIncorreto } =
-				await userService.login('email incorreto', senha);
+			const { rowCount: loginSucessoEmailIncorreto } = await login(
+				'email incorreto',
+				senha
+			);
 
 			expect(Boolean(loginSucessoSenhaIncorreta)).toBe(false);
 			expect(Boolean(loginSucessoEmailIncorreto)).toBe(false);
@@ -338,8 +356,8 @@ describe('Test Driven Development', () => {
 		// test('Deve renderizar na tela "E-mail já cadastrado" ao tentar cadastrar um E-mail já cadastrado.', async () => {
 		// 	const dados = fakeUser();
 
-		// 	await userService.createUser(dados);
-		// 	const { data } = await userService.createUser(dados);
+		// 	await createUser(dados);
+		// 	const { data } = await createUser(dados);
 
 		// 	expect(data).toContain('E-mail já cadastrado');
 		// });

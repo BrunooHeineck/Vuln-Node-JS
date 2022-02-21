@@ -1,10 +1,13 @@
 const { request } = require('../utils/utils');
-const userService = require('../service/userService');
-const postService = require('../service/postService');
-const utilservice = require('../service/utilService');
 const { fakeUser, fakePost } = require('./mock/fake');
 const dataBase = require('../config/database').pool;
-const fetch = require('node-fetch');
+const {
+	clearAllPosts,
+	clearAllUsers,
+	getUserById,
+} = require('../service/utilService');
+const { createUser, login } = require('../service/userService');
+const { createPost, getAllPost } = require('../service/postService');
 
 require('dotenv/config');
 
@@ -19,116 +22,320 @@ afterAll(async () => {
 });
 
 afterEach(async () => {
-	await utilservice.clearAllPosts();
-	await utilservice.clearAllUsers();
+	await clearAllPosts();
+	await clearAllUsers();
 });
 
 describe('Jenkins | Quality Gate', () => {
 	describe('Vuln: Method attribute', () => {
-		test(`Deve existir um rota para /createpost utilizando o método POST
-		path: routes/router
-		Criar um nova rota POST`, async () => {
-			const { status } = await request('/createpost', 'post', '');
+		//Deve existir um rota para /signup utilizando o método POST
+		test(
+			'Deve existir um rota para /signup utilizando o método POST' +
+				'\n\tpath: routes/router' +
+				'\n\tCriar um nova rota POST',
+			async () => {
+				const userDados = fakeUser();
 
-			expect(status).not.toBe(404);
-		});
+				const { data: dataBeforeCreate } = await request(
+					'/aux/getUsersRowsCount',
+					'get',
+					''
+				);
 
-		test(`Deve existir um rota para /login utilizando o método POST 
-		path: routes/router
-		Criar um nova rota POST`, async () => {
-			const { status } = await request('/login', 'post', '');
-			expect(status).not.toBe(404);
-		});
+				await request('/signup', 'post', userDados);
 
-		test(`Deve existir um rota para /signup utilizando o método POST 
-		path: routes/router
-		Criar um nova rota POST`, async () => {
-			const { status } = await request('/signup', 'post', '');
+				const { data: dataAfterCreate } = await request(
+					'/aux/getUsersRowsCount',
+					'get',
+					''
+				);
 
-			expect(status).not.toBe(404);
-		});
+				const { data } = await request(
+					`/aux/getuseridbyusername?username=${userDados.username}`,
+					'get',
+					''
+				);
+				const { id } = data;
 
-		test(`Deve existir um rota para /api/createpost utilizando o método POST
-		path: routes/api/apiPostRouter
-		Alterar a rota de GET para POST`, async () => {
-			const { status } = await request('/createpost', 'post', '');
+				expect(dataAfterCreate.rowCount).toBe(
+					dataBeforeCreate.rowCount + 1
+				);
+				if (id)
+					await request(`/aux/deleteuserbyid?id=${id}`, 'delete', '');
+			}
+		);
+		//Deve existir um rota para /api/signup utilizando o método POST
+		test(
+			'Deve existir um rota para /api/signup utilizando o método POST' +
+				'\n\tpath: routes/api/apiUserRouter' +
+				'\n\tAlterar a rota de GET para POST',
+			async () => {
+				const userDados = fakeUser();
+				const { data: dataBeforeCreate } = await request(
+					'/aux/getUsersRowsCount',
+					'get',
+					''
+				);
 
-			expect(status).not.toBe(404);
-		});
+				await request('/api/signup', 'post', userDados);
 
-		test(`Deve existir um rota para /api/login utilizando o método POST 
-		path: routes/api/apiUserRouter
-		Alterar a rota de GET para POST`, async () => {
-			const { status } = await request('/login', 'post', '');
-			expect(status).not.toBe(404);
-		});
+				const { data: dataAfterCreate } = await request(
+					'/aux/getUsersRowsCount',
+					'get',
+					''
+				);
 
-		test(`Deve existir um rota para /api/signup utilizando o método POST 
-		path: routes/api/apiUserRouter
-		Alterar a rota de GET para POST`, async () => {
-			const { status } = await request('/signup', 'post', '');
+				const { data } = await request(
+					`/aux/getuseridbyusername?username=${userDados.username}`,
+					'get',
+					''
+				);
+				const { id } = data;
 
-			expect(status).not.toBe(404);
-		});
+				expect(dataAfterCreate.rowCount).toBe(
+					dataBeforeCreate.rowCount + 1
+				);
+				if (id)
+					await request(`/aux/deleteuserbyid?id=${id}`, 'delete', '');
+			}
+		);
+		//Deve existir um rota para /login utilizando o método POST
+		test(
+			'Deve existir um rota para /login utilizando o método POST' +
+				'\n\tpath: routes/router' +
+				'\n\tCriar um nova rota POST',
+			async () => {
+				const userDados = fakeUser();
+
+				await request('/signup', 'post', userDados);
+
+				const { data: login } = await request(
+					'/login',
+					'post',
+					userDados
+				);
+
+				const { data } = await request(
+					`/aux/getuseridbyusername?username=${userDados.username}`,
+					'get',
+					''
+				);
+				const { id } = data;
+
+				expect(login).toContain('<!-- Initial Page -->');
+				if (id)
+					await request(`/aux/deleteuserbyid?id=${id}`, 'delete', '');
+			}
+		);
+		//Deve existir um rota para /api/login utilizando o método POST
+		test(
+			'Deve existir um rota para /api/login utilizando o método POST' +
+				'\n\tpath: routes/api/apiUserRouter' +
+				'\n\tAlterar a rota de GET para POST',
+			async () => {
+				const userDados = fakeUser();
+
+				await request('/signup', 'post', userDados);
+
+				const { data: login } = await request(
+					'/api/login',
+					'post',
+					userDados
+				);
+
+				const { data } = await request(
+					`/aux/getuseridbyusername?username=${userDados.username}`,
+					'get',
+					''
+				);
+
+				const { userInfo } = login;
+				const { id } = data;
+
+				expect(userInfo.usr_nome).toBe(userDados.nome);
+				if (id)
+					await request(`/aux/deleteuserbyid?id=${id}`, 'delete', '');
+			}
+		);
+		//Deve existir um rota para /createpost utilizando o método POST
+		test(
+			'Deve existir um rota para /createpost utilizando o método POST' +
+				'\n\tpath: routes/router' +
+				'\n\tCriar um nova rota POST para /createpost',
+			async () => {
+				const userDados = fakeUser();
+				const postDados = fakePost();
+
+				await request('/signup', 'post', userDados);
+				const { data: userData } = await request(
+					`/aux/getuseridbyusername?username=${userDados.username}`,
+					'get',
+					''
+				);
+				const { id: user_id } = userData;
+
+				const { data: dataBeforeCreate } = await request(
+					'/aux/getPostsRowsCount',
+					'get',
+					''
+				);
+
+				postDados.usuario = user_id;
+				await request('/createpost', 'post', postDados);
+
+				const { data: dataAfterCreate } = await request(
+					'/aux/getPostsRowsCount',
+					'get',
+					''
+				);
+
+				expect(dataAfterCreate.rowCount).toBe(
+					dataBeforeCreate.rowCount + 1
+				);
+
+				if (user_id) {
+					await request(
+						`/aux/deleteuserbyid?id=${user_id}`,
+						'delete',
+						''
+					);
+				}
+			}
+		);
+		//Deve existir um rota para /api/createpost utilizando o método POST
+		test(
+			'Deve existir um rota para /api/createpost utilizando o método POST' +
+				'\n\tpath: routes/api/apiPostRouter' +
+				'\n\tAlterar a rota de GET para POST',
+			async () => {
+				const userDados = fakeUser();
+				const postDados = fakePost();
+
+				await request('/signup', 'post', userDados);
+				const { data: userData } = await request(
+					`/aux/getuseridbyusername?username=${userDados.username}`,
+					'get',
+					''
+				);
+				const { id: user_id } = userData;
+
+				const { data: dataBeforeCreate } = await request(
+					'/aux/getPostsRowsCount',
+					'get',
+					''
+				);
+
+				postDados.usuario = user_id;
+				await request('/api/createpost', 'post', postDados);
+
+				const { data: dataAfterCreate } = await request(
+					'/aux/getPostsRowsCount',
+					'get',
+					''
+				);
+
+				expect(dataAfterCreate.rowCount).toBe(
+					dataBeforeCreate.rowCount + 1
+				);
+
+				if (user_id) {
+					await request(
+						`/aux/deleteuserbyid?id=${user_id}`,
+						'delete',
+						''
+					);
+				}
+			}
+		);
 	});
 
 	describe('Vuln: SQL Injection', () => {
-		test(`Deve sanitizar os dados de login antes de executar a query 
-		path: data/userData
-		Remover a concateção de strings na query SQL e substituir por uma consulta parametrizada
-		Exemplo de consulta parametrizada encontrada no README`, async () => {
-			const dados = fakeUser();
+		//Deve sanitizar os dados de login antes de executar a query
+		test(
+			'Deve sanitizar os dados de login antes de executar a query' +
+				'\n\tpath: data/userData' +
+				'\n\tpath: data/utilData => getUserByEmail && getUserByUsername && getUserByUsernameOrEmail' +
+				'\n\tRemover a concateção de strings na query SQL e substituir por uma consulta parametrizada ' +
+				'\n\tExemplo de consulta parametrizada encontrada no README',
+			async () => {
+				const dados = fakeUser();
 
-			await userService.createUser(dados);
+				await createUser(dados);
 
-			const email = '';
-			const senha = "' OR TRUE --";
+				const email = "' or true or 'a' = 'a";
+				const senha = "' OR TRUE --";
 
-			const { rowCount: sucessoLoginComSQLi } = await userService.login(
-				email,
-				senha
-			);
+				const { userNotFound, rowCount: sucessoLoginComSQLi } =
+					await login(email, senha);
 
-			expect(sucessoLoginComSQLi).toBe(false);
-		});
+				expect(Boolean(sucessoLoginComSQLi)).toBe(false);
+
+				if (!sucessoLoginComSQLi) expect(userNotFound).toBe(true);
+			}
+		);
 	});
 
 	describe('Vuln: Cross-site Scripting (XSS)', () => {
-		test(`Deve sanitizar os dados ao criar um novo post
-		path: service/postService
-		Sanitizar os dados antes de salva-los no banco de dados
-		Exemplo de sanitização encontrado no README`, async () => {
-			const userDados = fakeUser();
+		//Deve sanitizar os dados ao criar um novo POST
+		test(
+			'Deve sanitizar os dados ao criar um novo POST' +
+				'\n\tpath: service/postService | A função pode ser criada no mesmo arquivo ou em utils/utils' +
+				'\n\tSanitizar os dados antes de salva-los no banco de dados ' +
+				'\n\tExemplo de sanitização encontrado no README',
+			async () => {
+				const userDados = fakeUser();
 
-			const idUser = await userService.createUser(userDados);
+				const idUser = await createUser(userDados);
 
-			const postDados = fakePost();
-			postDados.usuario = idUser;
-			postDados.titulo = '<script>console.log("XSS")</script>';
+				const postDados = fakePost();
+				postDados.usuario = idUser;
+				postDados.titulo = '<script>console.log("XSS")</script>';
+				postDados.pais = '<script>console.log("XSS")</script>';
+				postDados.fotografo = '<script>console.log("XSS")</script>';
 
-			await postService.createPost(postDados);
+				await createPost(postDados);
 
-			const { rows } = await postService.getAllPost();
+				const { rows } = await getAllPost();
 
-			expect(rows[0].posts_titulo).toContain(
-				'&#60;script&#62;console.log(&#34;XSS&#34;)&#60;/script&#62;'
-			);
-			expect(rows[0].posts_titulo).not.toContain(
-				'<script>console.log("XSS")</script>'
-			);
-		});
+				expect(rows[0].posts_titulo).toContain(
+					'&#60;script&#62;console.log(&#34;XSS&#34;)&#60;/script&#62;'
+				);
+				expect(rows[0].posts_titulo).not.toContain(
+					'<script>console.log("XSS")</script>'
+				);
+
+				expect(rows[0].posts_pais).toContain(
+					'&#60;script&#62;console.log(&#34;XSS&#34;)&#60;/script&#62;'
+				);
+				expect(rows[0].posts_pais).not.toContain(
+					'<script>console.log("XSS")</script>'
+				);
+
+				expect(rows[0].posts_fotografo).toContain(
+					'&#60;script&#62;console.log(&#34;XSS&#34;)&#60;/script&#62;'
+				);
+				expect(rows[0].posts_fotografo).not.toContain(
+					'<script>console.log("XSS")</script>'
+				);
+			}
+		);
 	});
 
 	describe('Vuln: Senha salva em texto limpo', () => {
-		test(`Deve usar hash e salt para salvar a senha no banco de dados 
-		path: service/userService
-		Substituir a senha por um hash com salt antes de salver no banco de dados`, async () => {
-			const dados = fakeUser();
-			const usr_id = await userService.createUser(dados);
+		//Deve usar hash e salt para salvar a senha no banco de dados
+		test(
+			'Deve usar hash e salt para salvar a senha no banco de dados' +
+				'\n\tpath: service/userService' +
+				'\n\tSubstituir a senha por um hash com salt antes de salver no banco de dados',
+			async () => {
+				const dados = fakeUser();
+				const { senha } = dados;
+				const usr_id = await createUser(dados);
 
-			const { rows } = await utilservice.getUserById(usr_id);
+				const { rows } = await getUserById(usr_id);
 
-			expect(rows[0].usr_senha).not.toBe(dados.senha);
-		});
+				expect(rows[0].usr_senha).not.toBe(senha);
+			}
+		);
 	});
 });

@@ -27,9 +27,9 @@ router.get(
 			const userInfo = rows[0];
 			res.json({ redirect: '/', userInfo });
 		} else if (userNotFound) {
+			//userNotFound
 			res.json({ redirect: '/login?loginerr?usernotfound' });
 		} else {
-			//userNotFound
 			res.json({ redirect: '/login?loginerr' });
 		}
 	})
