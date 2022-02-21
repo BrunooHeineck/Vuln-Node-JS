@@ -27,7 +27,7 @@ afterEach(async () => {
 });
 
 describe('Jenkins | Quality Gate', () => {
-	describe('Vuln: Method attribute', () => {
+	describe('Vuln: Method attribute (Vuln: Method attribute devem ser corrigidas na ordem)', () => {
 		//Deve existir um rota para /signup utilizando o método POST
 		test(
 			'Deve existir um rota para /signup utilizando o método POST' +
