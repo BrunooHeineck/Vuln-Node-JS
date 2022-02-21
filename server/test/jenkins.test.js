@@ -27,9 +27,9 @@ afterEach(async () => {
 });
 
 describe('Jenkins | Quality Gate', () => {
-	describe('Vuln: Method attribute (Vuln: Method attribute devem ser corrigidas na ordem)', () => {
+	describe('Vuln: Method attribute', () => {
 		//Deve existir um rota para /signup utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /signup utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST',
@@ -65,7 +65,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/signup utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /api/signup utilizando o método POST' +
 				'\n\tpath: routes/api/apiUserRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -100,7 +100,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /login utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /login utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST',
@@ -128,7 +128,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/login utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /api/login utilizando o método POST' +
 				'\n\tpath: routes/api/apiUserRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -158,7 +158,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /createpost utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /createpost utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST para /createpost',
@@ -203,7 +203,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/createpost utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /api/createpost utilizando o método POST' +
 				'\n\tpath: routes/api/apiPostRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -256,7 +256,7 @@ describe('Jenkins | Quality Gate', () => {
 				'\n\tpath: data/userData' +
 				'\n\tpath: data/utilData => getUserByEmail && getUserByUsername && getUserByUsernameOrEmail' +
 				'\n\tRemover a concateção de strings na query SQL e substituir por uma consulta parametrizada ' +
-				'\n\tExemplo de consulta parametrizada encontrada no README',
+				'\n\tExemplo de consulta parametrizada pode ser encontrada no README',
 			async () => {
 				const dados = fakeUser();
 
@@ -281,7 +281,7 @@ describe('Jenkins | Quality Gate', () => {
 			'Deve sanitizar os dados ao criar um novo POST' +
 				'\n\tpath: service/postService | A função pode ser criada no mesmo arquivo ou em utils/utils' +
 				'\n\tSanitizar os dados antes de salva-los no banco de dados ' +
-				'\n\tExemplo de sanitização encontrado no README',
+				'\n\tExemplo de sanitização pode ser encontrado no README',
 			async () => {
 				const userDados = fakeUser();
 
@@ -326,10 +326,10 @@ describe('Jenkins | Quality Gate', () => {
 		test(
 			'Deve usar hash e salt para salvar a senha no banco de dados' +
 				'\n\tpath: service/userService => createUser && login' +
-				'\n\tLembrar de salvar no banco com hash e usar o bcrypt para comparar quando for realizar o login' +
 				'\n\tSubstituir a senha por um hash com salt antes de salver no banco de dados' +
+				'\n\tLembrar de usar o bcrypt para comparar quando for realizar o login' +
 				'\n\tUtilizar biblioteca bcrypt (já instalada)' +
-				'\n\tExemplo de uso do bcrypt encontrado no README',
+				'\n\tExemplo de uso do bcrypt pode ser encontrado no README',
 			async () => {
 				const dados = fakeUser();
 				const { senha } = dados;
@@ -338,6 +338,30 @@ describe('Jenkins | Quality Gate', () => {
 				const { rows } = await getUserById(usr_id);
 
 				expect(rows[0].usr_senha).not.toBe(senha);
+			}
+		);
+	});
+	describe('Vuln: Insecure Cookies', () => {
+		//Deve usar hash e salt para salvar a senha no banco de dados
+		test(
+			"Deve usar as tags secure, httpOnly, sameSite='strict' para setar um cookie" +
+				'\n\tpath: utils/utils => setCookies' +
+				'\n\tAo setar um cookie, incluir as tags de de seguraça para cookies' +
+				'\n\tExemplo de como setar uma tag no cookie pode ser encontrado no README',
+
+			async () => {
+				const { data } = await request(
+					'/aux/getPathCookies',
+					'get',
+					''
+				);
+
+				expect(data).toContain('secure: true');
+				expect(data).toContain('httpOnly: true');
+				expect(data).toContain("sameSite: 'strict'");
+				expect(data).toContain(
+					'Object.keys(cookies).forEach(cookie => res.clearCookie(cookie));'
+				);
 			}
 		);
 	});

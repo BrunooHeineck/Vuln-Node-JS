@@ -62,6 +62,12 @@ const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);
 bcrypt.compareSync(myPlaintextPassword, hash); // true
 bcrypt.compareSync(someOtherPlaintextPassword, hash); // false
 
+Secure cookies
+res.cookie(`Cookie token name`,`cookie string Value`,{
+        secure: true,
+        httpOnly: true,
+        sameSite: 'strict'
+    });
 
 Moelo do Banco de Dados
 

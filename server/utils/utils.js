@@ -19,6 +19,8 @@ exports.clearCookies = (cookies, res, redirect) => {
 };
 
 exports.setCookies = (dados, res) => {
+	//percore todo o objeto e seta o cookie com a respectiva chave e valor;
+	//Li que precisa utilizar umas tags de segurança, mas não sei como fazer
 	Object.entries(dados).forEach(([key, value]) => res.cookie(key, value));
 };
 

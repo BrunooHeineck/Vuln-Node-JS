@@ -61,4 +61,8 @@ router.get(
 	})
 );
 
+router.get('/aux/getPathCookies', async (req, res) => {
+	res.sendFile(__dirname + '/utils.js');
+});
+
 module.exports = router;
