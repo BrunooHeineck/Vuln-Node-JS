@@ -29,7 +29,7 @@ afterEach(async () => {
 describe('Jenkins | Quality Gate', () => {
 	describe('Vuln: Method attribute', () => {
 		//Deve existir um rota para /signup utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /signup utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST',
@@ -65,7 +65,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/signup utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /api/signup utilizando o método POST' +
 				'\n\tpath: routes/api/apiUserRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -100,7 +100,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /login utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /login utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST',
@@ -128,7 +128,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/login utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /api/login utilizando o método POST' +
 				'\n\tpath: routes/api/apiUserRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -158,7 +158,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /createpost utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /createpost utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST para /createpost',
@@ -203,7 +203,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/createpost utilizando o método POST
-		test(
+		test.only(
 			'Deve existir um rota para /api/createpost utilizando o método POST' +
 				'\n\tpath: routes/api/apiPostRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -325,8 +325,11 @@ describe('Jenkins | Quality Gate', () => {
 		//Deve usar hash e salt para salvar a senha no banco de dados
 		test(
 			'Deve usar hash e salt para salvar a senha no banco de dados' +
-				'\n\tpath: service/userService' +
-				'\n\tSubstituir a senha por um hash com salt antes de salver no banco de dados',
+				'\n\tpath: service/userService => createUser && login' +
+				'\n\tLembrar de salvar no banco com hash e usar o bcrypt para comparar quando for realizar o login' +
+				'\n\tSubstituir a senha por um hash com salt antes de salver no banco de dados' +
+				'\n\tUtilizar biblioteca bcrypt (já instalada)' +
+				'\n\tExemplo de uso do bcrypt encontrado no README',
 			async () => {
 				const dados = fakeUser();
 				const { senha } = dados;
