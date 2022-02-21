@@ -1,4 +1,30 @@
+SERVER > ROUTES > VIEW
+SERVER > ROUTES > SERVICE > DATA;
 
+SERVER => AS CONFIGURAÇÕES DO SERVIDOR;
+
+ROUTES => MAPEADOS TODOS OS ENDPOINTS;
+	ROUTES/ROUTER.JS => TODOS OS ENDPOINTS RESPOSAVEIS POR RENDERIZAR A VIEW;
+	ROUTES/API => TODOS OS ENDPOINTS QUE SERÃO CHAMADOS PELO ROUTER.JS E DEVOLVEM AS INFORMAÇÕES SOLICITADAS;
+
+VIEW => ARQUIVOS EJS PARA VISUALIZAÇÃO DAS PAGES
+
+SERVICE => TODA A REGRA DE NÉGOCIO DA APLICAÇÃO, VALIDAÇÕES DEVEM FICAR AQUI;
+
+DATA => EXECUTA A QUERY NO BANCO DE DADOS;
+
+UTIL => PASTA DE FUNÇÕES UTEIS NO PROJETO;
+	UTIL/UTILROUTER.JS => ENDPOINTS QUE NÃO ESTÃO EM PRODUCÃO MAS AUXILIAM NOS TESTES;
+
+TEST => ARQUIVOS DE TESTES
+	TEST/MOCK/FAKE => FUNCÃO QUE REALIZA O MOCK DOS DADOS;
+	TEST/MOCK/FAKEROUTER.JS => ENDPOINTS QUE NÃO ESTÃO EM PRODUCÃO MAS AUXILIAM NOS TESTES COM DADOS MOCK;
+	TEST/JENKINS.TEST.JS => SIMULA A ESTEIRA DO JENKINS, QUALITYGATE;
+	TEST/TDD.TEST.JS => TEST DRIVEN DEVELOPMENT;
+
+CONFIG => CONFIGURAÇÕES DO BANCO DE DADOS
+
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
 Consulta Parametrizada
 node-postgres | Documentation | Queries
@@ -9,8 +35,8 @@ Exemplo2:
 	dataBase.query(SELECT * FROM table WHERE column1=$1 AND column2=$2, [value1, value2]);
 
 
-Função para sanitizar os Dados que achei isso na internet para escapar os caracteres, mas nao esta funcionando
-exports.escape = async unescapedString => {
+Função para sanitizar os Dados que achei isso na internet para escapar os caracteres, mas nao esta funcionando, acho que algumas coisas estão faltando
+
 	const regexChar = /[<>`'"&]/g;
 	let arrayChar;
 	let escapedString = unescapedString;
@@ -23,8 +49,8 @@ exports.escape = async unescapedString => {
 
 		escapedString = escapedString.replaceAll(foundChar, `&#${charCode};`);
 	}
-	//
-};
+	
+
 
 Exemplo de uso bcrypt
 const bcrypt = require('bcrypt');
