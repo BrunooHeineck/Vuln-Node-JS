@@ -29,7 +29,7 @@ afterEach(async () => {
 describe('Jenkins | Quality Gate', () => {
 	describe('Vuln: Method attribute', () => {
 		//Deve existir um rota para /signup utilizando o método POST
-		test.only(
+		test(
 			'Deve existir um rota para /signup utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST',
@@ -65,7 +65,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/signup utilizando o método POST
-		test.only(
+		test(
 			'Deve existir um rota para /api/signup utilizando o método POST' +
 				'\n\tpath: routes/api/apiUserRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -100,7 +100,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /login utilizando o método POST
-		test.only(
+		test(
 			'Deve existir um rota para /login utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST',
@@ -128,7 +128,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/login utilizando o método POST
-		test.only(
+		test(
 			'Deve existir um rota para /api/login utilizando o método POST' +
 				'\n\tpath: routes/api/apiUserRouter' +
 				'\n\tAlterar a rota de GET para POST',
@@ -158,7 +158,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /createpost utilizando o método POST
-		test.only(
+		test(
 			'Deve existir um rota para /createpost utilizando o método POST' +
 				'\n\tpath: routes/router' +
 				'\n\tCriar um nova rota POST para /createpost',
@@ -203,7 +203,7 @@ describe('Jenkins | Quality Gate', () => {
 			}
 		);
 		//Deve existir um rota para /api/createpost utilizando o método POST
-		test.only(
+		test(
 			'Deve existir um rota para /api/createpost utilizando o método POST' +
 				'\n\tpath: routes/api/apiPostRouter' +
 				'\n\tAlterar a rota de GET para POST',
