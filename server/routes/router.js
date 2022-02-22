@@ -114,7 +114,7 @@ router.get('/signup', async (req, res) => {
 });
 
 router.get('/createpost', async (req, res) => {
-	const logado = Boolean(usr_id);
+	const logado = Boolean(req.cookies.usr_id);
 	// REALIZAR CREATE POST {
 	const postCreateRequest = req.url.includes('titulo');
 
