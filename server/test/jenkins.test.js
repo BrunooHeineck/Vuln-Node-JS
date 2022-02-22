@@ -273,6 +273,7 @@ describe('Jenkins | Quality Gate', () => {
 				if (!sucessoLoginComSQLi) expect(userNotFound).toBe(true);
 			}
 		);
+		//Deve sanitizar os dados antes de executar qualquer query em userData
 		test(
 			'Deve sanitizar os dados antes de executar qualquer query em userData' +
 				'\n\tpath: data/userData' +
@@ -288,6 +289,7 @@ describe('Jenkins | Quality Gate', () => {
 				expect(regex.test(data)).toBe(false);
 			}
 		);
+		//Deve sanitizar os dados antes de executar qualquer query em postData
 		test(
 			'Deve sanitizar os dados antes de executar qualquer query em postData' +
 				'\n\tpath: data/postData' +
@@ -303,6 +305,7 @@ describe('Jenkins | Quality Gate', () => {
 				expect(regex.test(data)).toBe(false);
 			}
 		);
+		//Deve sanitizar os dados antes de executar qualquer query em utilData
 		test(
 			'Deve sanitizar os dados antes de executar qualquer query em utilData' +
 				'\n\tpath: data/utilData' +
@@ -388,7 +391,7 @@ describe('Jenkins | Quality Gate', () => {
 		);
 	});
 	describe('Vuln: Insecure Cookies', () => {
-		//Deve usar hash e salt para salvar a senha no banco de dados
+		//Deve usar as tags secure, httpOnly, sameSite='strict' para setar um cookie
 		test(
 			"Deve usar as tags secure, httpOnly, sameSite='strict' para setar um cookie" +
 				'\n\tpath: utils/utils => setCookies' +
