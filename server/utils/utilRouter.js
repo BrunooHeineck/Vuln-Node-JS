@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const cookieParser = require('cookie-parser');
+const { rootPath } = require('../consts');
 const { getAllPost, getPostById } = require('../service/postService');
 const { deleteUser } = require('../service/userService');
 const {
@@ -63,6 +64,16 @@ router.get(
 
 router.get('/aux/getPathCookies', async (req, res) => {
 	res.sendFile(__dirname + '/utils.js');
+});
+
+router.get('/aux/getPathUserData', async (req, res) => {
+	res.sendFile(rootPath + '/data/userData.js');
+});
+router.get('/aux/getPathPostData', async (req, res) => {
+	res.sendFile(rootPath + '/data/postData.js');
+});
+router.get('/aux/getPathUtilData', async (req, res) => {
+	res.sendFile(rootPath + '/data/utilData.js');
 });
 
 module.exports = router;

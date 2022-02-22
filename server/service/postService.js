@@ -1,5 +1,4 @@
 const data = require('../data/postData');
-const { escape } = require('../utils/utils');
 
 // {
 // 	"dadosPost": {

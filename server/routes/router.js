@@ -26,6 +26,16 @@ const renderData = {
 	endpointPaginaInicial: '/',
 };
 
+// {
+// 	"req.query": {
+// 			"nome": "nome",
+// 			"sobrenome": "sobrenome",
+// 			"telefone": "telefone",
+// 			"username": "username",
+// 			"email": "email",
+// 			"senha": "senha",
+// }
+
 router.get('/', async (req, res) => {
 	const logout = req.url.endsWith(endpoints.logout);
 	if (logout) clearCookies(req.cookies, res, '/');
@@ -47,6 +57,7 @@ router.get('/login', async (req, res) => {
 	const logado = Boolean(usr_username);
 	const loginError = req.url.includes('loginerr');
 	const userNotFound = req.url.includes('usernotfound');
+	// REALIZAR LOGIN {
 	const loginRequest = req.url.includes('email') && req.url.includes('senha');
 
 	if (loginRequest) {
@@ -60,6 +71,7 @@ router.get('/login', async (req, res) => {
 		}
 
 		res.redirect(data.redirect);
+		//REALIZAR LOGIN }
 	} else {
 		renderData.loginErrorMessage =
 			loginError && userNotFound
@@ -79,6 +91,7 @@ router.get('/signup', async (req, res) => {
 	const logado = Boolean(usr_username);
 	const emailErr = req.url.includes('emailerr');
 	const usernameErr = req.url.includes('usernameerr');
+	// REALIZAR CADASTRO {
 	const userCreateRequest = req.url.includes('email');
 
 	if (userCreateRequest) {
@@ -86,6 +99,7 @@ router.get('/signup', async (req, res) => {
 		const params = new URLSearchParams(dados);
 		const { data } = await request(`/api/signup?${params}`, 'get', '');
 		res.redirect(data.redirect);
+		// REALIZAR CADASTRO }
 	} else {
 		renderData.signupErrorMessage = emailErr
 			? 'E-mail já cadastrado'
@@ -100,16 +114,17 @@ router.get('/signup', async (req, res) => {
 });
 
 router.get('/createpost', async (req, res) => {
-	const { usr_id } = req.cookies;
 	const logado = Boolean(usr_id);
+	// REALIZAR CREATE POST {
 	const postCreateRequest = req.url.includes('titulo');
 
 	if (postCreateRequest) {
 		const dados = req.query;
-		dados.usuario = usr_id;
+		if (dados.usuario === undefined) dados.usuario = req.cookies.usr_id;
 		const params = new URLSearchParams(dados);
 		const { data } = await request(`/api/createpost?${params}`, 'get', '');
 		res.redirect(data.redirect);
+		// REALIZAR CREATE POST }
 	} else {
 		logado ? res.render('create_post', renderData) : res.redirect('/login');
 	}

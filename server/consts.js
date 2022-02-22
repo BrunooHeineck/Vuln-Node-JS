@@ -21,3 +21,5 @@ exports.endpoints = {
 	apiSignup: '/api/signup',
 	apiCreatePost: '/api/createpost',
 };
+
+exports.rootPath = __dirname;

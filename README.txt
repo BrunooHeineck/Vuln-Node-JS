@@ -26,6 +26,11 @@ CONFIG => CONFIGURAÇÕES DO BANCO DE DADOS
 
 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
+PARA PEGAR DADOS DO METODO GET 
+res.query
+PARA PEGAR DADOS DO METODO POST 
+res.body
+
 Consulta Parametrizada
 node-postgres | Documentation | Queries
 Exemplo1:
@@ -47,7 +52,7 @@ Função para sanitizar os Dados que achei isso na internet para escapar os cara
 
 		if (foundChar === '&') foundChar = /&(?!#)/g;
 
-		escapedString = escapedString.replaceAll(foundChar, `&#${charCode};`);
+		escapedString = escapedString.replace(foundChar, `&#${charCode};`);
 	}
 	
 
