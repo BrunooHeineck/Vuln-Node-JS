@@ -68,13 +68,14 @@ bcrypt.compareSync(myPlaintextPassword, hash); // true
 bcrypt.compareSync(someOtherPlaintextPassword, hash); // false
 
 Secure cookies
-res.cookie(`Cookie token name`,`cookie string Value`,{
-        secure: true,
-        httpOnly: true,
-        sameSite: 'strict'
-    });
+Passar as tags como um objeto para o 3ro params de res.cookie
+{
+	secure: true,
+	httpOnly: true,
+	sameSite: 'strict'
+});
 
-Moelo do Banco de Dados
+Modelo do Banco de Dados
 
 users (
 	usr_id SERIAL PRIMARY KEY,

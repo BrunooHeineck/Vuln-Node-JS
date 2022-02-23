@@ -57,8 +57,8 @@ router.get('/login', async (req, res) => {
 	const logado = Boolean(usr_username);
 	const loginError = req.url.includes('loginerr');
 	const userNotFound = req.url.includes('usernotfound');
-	// REALIZAR LOGIN {
 	const loginRequest = req.url.includes('email') && req.url.includes('senha');
+	// REALIZAR LOGIN {
 
 	if (loginRequest) {
 		const { email, senha } = req.query;
@@ -91,8 +91,8 @@ router.get('/signup', async (req, res) => {
 	const logado = Boolean(usr_username);
 	const emailErr = req.url.includes('emailerr');
 	const usernameErr = req.url.includes('usernameerr');
-	// REALIZAR CADASTRO {
 	const userCreateRequest = req.url.includes('email');
+	// REALIZAR CADASTRO {
 
 	if (userCreateRequest) {
 		const dados = req.query;
@@ -115,8 +115,8 @@ router.get('/signup', async (req, res) => {
 
 router.get('/createpost', async (req, res) => {
 	const logado = Boolean(req.cookies.usr_id);
-	// REALIZAR CREATE POST {
 	const postCreateRequest = req.url.includes('titulo');
+	// REALIZAR CREATE POST {
 
 	if (postCreateRequest) {
 		const dados = req.query;
