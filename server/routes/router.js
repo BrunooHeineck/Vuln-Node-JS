@@ -2,6 +2,7 @@ const router = require('express').Router();
 const cookieParser = require('cookie-parser');
 const { response } = require('express');
 const { endpoints } = require('../consts');
+const userService = require('../service/utilService');
 const postService = require('../service/postService');
 const { setCookies, clearCookies, request } = require('../utils/utils');
 router.use(cookieParser());
@@ -40,14 +41,22 @@ router.get('/', async (req, res) => {
 	const logout = req.url.endsWith(endpoints.logout);
 	if (logout) clearCookies(req.cookies, res, '/');
 	else {
-		const { usr_username } = req.cookies;
+		const { usr_id } = req.cookies;
+		const { usr_admin } = req.cookies;
+		if (usr_id) {
+			const { rows: rows_userService } = await userService.getUserById(
+				usr_id
+			);
+
+			var { usr_username } = rows_userService[0];
+		}
 
 		const { rows } = await postService.getAllPost();
 
-		renderData.logado = Boolean(usr_username);
+		renderData.logado = Boolean(usr_id);
 		renderData.username = usr_username;
 		renderData.posts = rows;
-
+		renderData.admin = usr_admin;
 		res.render('initial_page', renderData);
 	}
 });

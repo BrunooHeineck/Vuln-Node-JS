@@ -31,6 +31,13 @@ exports.getPostById = async posts_id => {
 		`SELECT * FROM posts WHERE posts_id=${posts_id}`
 	);
 };
+
+exports.getPostByFotografo = async posts_fotografo => {
+	return await dataBase.query(
+		`SELECT * FROM posts WHERE posts_fotografo='${posts_fotografo}'`
+	);
+};
+
 exports.getAllPost = async () => {
 	return await dataBase.query(`SELECT * FROM posts`);
 };

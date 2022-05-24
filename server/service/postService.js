@@ -21,6 +21,10 @@ exports.getPostById = async posts_id => {
 	return await data.getPostById(posts_id);
 };
 
+exports.getPostByFotografo = async posts_fotografo => {
+	return await data.getPostByFotografo(posts_fotografo);
+};
+
 exports.updatePost = async (posts_id, dados) => {
 	return await data.updatePost(posts_id, dados);
 };

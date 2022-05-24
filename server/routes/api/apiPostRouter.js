@@ -20,4 +20,12 @@ router.get(
 	})
 );
 
+router.get(
+	'/api/posts',
+	errHandling(async (req, res) => {
+		const { rows: posts } = await postService.getPostByFotografo(req.query);
+		res.json({ redirect: posts });
+	})
+);
+
 module.exports = router;

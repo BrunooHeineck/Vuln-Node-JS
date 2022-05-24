@@ -19,6 +19,7 @@ const {
 	createPost,
 	getAllPost,
 	getPostById,
+	getPostByFotografo,
 	updatePost,
 	deletePost,
 } = require('../service/postService');
@@ -259,6 +260,43 @@ describe('Test Driven Development', () => {
 				expect(rows[2].posts_fotografo).toBe(postDados2.fotografo);
 				expect(rows[2].posts_usuario).toBe(postDados2.usuario);
 				expect(rows[2].posts_privado).toBe(postDados2.privado);
+			});
+			test.only('Deve retornar o post pelo nome do fotografo', async () => {
+				const userDados0 = fakeUser();
+				const userDados2 = fakeUser();
+
+				const idUser0 = await createUser(userDados0);
+				const idUser2 = await createUser(userDados2);
+
+				const postDados0 = fakePost();
+				postDados0.usuario = idUser0;
+				const postDados1 = fakePost();
+				postDados1.usuario = idUser0;
+				postDados1.fotografo = postDados0.fotografo;
+
+				const postDados2 = fakePost();
+				postDados2.usuario = idUser2;
+
+				await createPost(postDados0);
+				await createPost(postDados1);
+				await createPost(postDados2);
+
+				const { rowCount, rows } = await getPostByFotografo(
+					postDados0.fotografo
+				);
+
+				expect(rowCount).toBe(2);
+				expect(rows[0].posts_titulo).toBe(postDados0.titulo);
+				expect(rows[0].posts_pais).toBe(postDados0.pais);
+				expect(rows[0].posts_fotografo).toBe(postDados0.fotografo);
+				expect(rows[0].posts_usuario).toBe(postDados0.usuario);
+				expect(rows[0].posts_privado).toBe(postDados0.privado);
+
+				expect(rows[1].posts_titulo).toBe(postDados1.titulo);
+				expect(rows[1].posts_pais).toBe(postDados1.pais);
+				expect(rows[1].posts_fotografo).toBe(postDados1.fotografo);
+				expect(rows[1].posts_usuario).toBe(postDados1.usuario);
+				expect(rows[1].posts_privado).toBe(postDados1.privado);
 			});
 		});
 		describe('UPDATE', () => {
