@@ -38,13 +38,12 @@ const renderData = {
 // }
 
 router.get('/', async (req, res) => {
-	const { fotografo } = req.query;
-
 	const logout = req.url.endsWith(endpoints.logout);
 	if (logout) clearCookies(req.cookies, res, '/');
 	else {
-		const { usr_id } = req.cookies;
-		const { usr_admin } = req.cookies;
+		const { fotografo } = req.query;
+		const { usr_id, usr_admin } = req.cookies;
+
 		if (usr_id) {
 			const { rows: rows_userService } = await userService.getUserById(
 				usr_id
@@ -75,8 +74,8 @@ router.get('/login', async (req, res) => {
 	const loginError = req.url.includes('loginerr');
 	const userNotFound = req.url.includes('usernotfound');
 	const loginRequest = req.url.includes('email') && req.url.includes('senha');
-	// REALIZAR LOGIN {
 
+	// REALIZAR LOGIN {
 	if (loginRequest) {
 		const { email, senha } = req.query;
 		const params = new URLSearchParams({ email, senha });
@@ -109,13 +108,14 @@ router.get('/signup', async (req, res) => {
 	const emailErr = req.url.includes('emailerr');
 	const usernameErr = req.url.includes('usernameerr');
 	const userCreateRequest = req.url.includes('email');
-	// REALIZAR CADASTRO {
 
+	// REALIZAR CADASTRO {
 	if (userCreateRequest) {
 		const dados = req.query;
 		const params = new URLSearchParams(dados);
 		const { data } = await request(`/api/signup?${params}`, 'get', '');
 		res.redirect(data.redirect);
+
 		// REALIZAR CADASTRO }
 	} else {
 		renderData.signupErrorMessage = emailErr
@@ -133,8 +133,8 @@ router.get('/signup', async (req, res) => {
 router.get('/createpost', async (req, res) => {
 	const logado = Boolean(req.cookies.usr_id);
 	const postCreateRequest = req.url.includes('titulo');
-	// REALIZAR CREATE POST {
 
+	// REALIZAR CREATE POST {
 	if (postCreateRequest) {
 		const dados = req.query;
 		if (dados.usuario === undefined) dados.usuario = req.cookies.usr_id;

@@ -1,3 +1,7 @@
+Considerações importantes
+Toda a vez que o código for salvo o server será recarregado automaticamente.
+Caso precise recarregar o server manualmente, digitar **rs** no terminal e apertar **Enter**
+
 #### SERVER > ROUTES > VIEW
 
 #### SERVER > ROUTES > SERVICE > DATA
@@ -6,7 +10,7 @@
 
 #### ROUTES => MAPEADOS TODOS OS ENDPOINTS
 
-#### ROUTES/ROUTER.JS => TODOS OS ENDPOINTS RESPOSAVEIS POR RENDERIZAR A VIEW
+#### ROUTES/ROUTER.JS => TODOS OS ENDPOINTS RESPONSAVEIS POR RENDERIZAR A VIEW
 
 #### ROUTES/API => TODOS OS ENDPOINTS QUE SERÃO CHAMADOS PELO ROUTER.JS E DEVOLVEM AS INFORMAÇÕES SOLICITADAS
 
