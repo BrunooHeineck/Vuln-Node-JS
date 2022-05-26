@@ -50,13 +50,13 @@
 
 ### **Exemplo1:**
 
-`const sqlSanitized = SELECT _ FROM table WHERE column1=$1 AND column2=$2;`
+    const sqlSanitized = SELECT _ FROM table WHERE column1=$1 AND column2=$2;  
 
-`dataBase.query(sqlSanitized, [value1, value2]);`
+    dataBase.query(sqlSanitized, [value1, value2]);  
 
 ### **Exemplo2:**
 
-`dataBase.query(SELECT _ FROM table WHERE column1=$1 AND column2=$2, [value1, value2]);`
+    dataBase.query(SELECT _ FROM table WHERE column1=$1 AND column2=$2, [value1, value2]);  
 
 > ## Função para **sanitizar** os Dados
 
