@@ -1,95 +1,117 @@
-<h1>SERVER > ROUTES > VIEW </h1>
-SERVER > ROUTES > SERVICE > DATA;
+#### SERVER > ROUTES > VIEW
 
-SERVER => AS CONFIGURAÇÕES DO SERVIDOR;
+#### SERVER > ROUTES > SERVICE > DATA
 
-ROUTES => MAPEADOS TODOS OS ENDPOINTS;
-ROUTES/ROUTER.JS => TODOS OS ENDPOINTS RESPOSAVEIS POR RENDERIZAR A VIEW;
-ROUTES/API => TODOS OS ENDPOINTS QUE SERÃO CHAMADOS PELO ROUTER.JS E DEVOLVEM AS INFORMAÇÕES SOLICITADAS;
+#### SERVER => AS CONFIGURAÇÕES DO SERVIDOR
 
-VIEW => ARQUIVOS EJS PARA VISUALIZAÇÃO DAS PAGES
+#### ROUTES => MAPEADOS TODOS OS ENDPOINTS
 
-SERVICE => TODA A REGRA DE NÉGOCIO DA APLICAÇÃO, VALIDAÇÕES DEVEM FICAR AQUI;
+#### ROUTES/ROUTER.JS => TODOS OS ENDPOINTS RESPOSAVEIS POR RENDERIZAR A VIEW
 
-DATA => EXECUTA A QUERY NO BANCO DE DADOS;
+#### ROUTES/API => TODOS OS ENDPOINTS QUE SERÃO CHAMADOS PELO ROUTER.JS E DEVOLVEM AS INFORMAÇÕES SOLICITADAS
 
-UTIL => PASTA DE FUNÇÕES UTEIS NO PROJETO;
-UTIL/UTILROUTER.JS => ENDPOINTS QUE NÃO ESTÃO EM PRODUCÃO MAS AUXILIAM NOS TESTES;
+#### VIEW => ARQUIVOS EJS PARA VISUALIZAÇÃO DAS PAGES
 
-TEST => ARQUIVOS DE TESTES
-TEST/MOCK/FAKE => FUNCÃO QUE REALIZA O MOCK DOS DADOS;
-TEST/MOCK/FAKEROUTER.JS => ENDPOINTS QUE NÃO ESTÃO EM PRODUCÃO MAS AUXILIAM NOS TESTES COM DADOS MOCK;
-TEST/JENKINS.TEST.JS => SIMULA A ESTEIRA DO JENKINS, QUALITYGATE;
-TEST/TDD.TEST.JS => TEST DRIVEN DEVELOPMENT;
+#### SERVICE => TODA A REGRA DE NÉGOCIO DA APLICAÇÃO, VALIDAÇÕES DEVEM FICAR AQUI
 
-CONFIG => CONFIGURAÇÕES DO BANCO DE DADOS
+#### DATA => EXECUTA A QUERY NO BANCO DE DADOS
 
-||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+#### UTIL => PASTA DE FUNÇÕES UTEIS NO PROJETO
 
-PARA PEGAR DADOS DO METODO GET
-res.query
-PARA PEGAR DADOS DO METODO POST
-res.body
+#### UTIL/UTILROUTER.JS => ENDPOINTS QUE NÃO ESTÃO EM PRODUCÃO MAS AUXILIAM NOS TESTES
 
-Consulta Parametrizada
-node-postgres | Documentation | Queries
-Exemplo1:
-const sqlSanitized = SELECT _ FROM table WHERE column1=$1 AND column2=$2;
-dataBase.query(sqlSanitized, [value1, value2]);
-Exemplo2:
-dataBase.query(SELECT _ FROM table WHERE column1=$1 AND column2=$2, [value1, value2]);
+#### TEST => ARQUIVOS DE TESTES
 
-Função para sanitizar os Dados que achei isso na internet para escapar os caracteres, mas nao esta funcionando, acho que algumas coisas estão faltando
+#### TEST/MOCK/FAKE => FUNCÃO QUE REALIZA O MOCK DOS DADOS
+
+#### TEST/MOCK/FAKEROUTER.JS => ENDPOINTS QUE NÃO ESTÃO EM PRODUCÃO MAS AUXILIAM NOS TESTES COM DADOS MOCK
+
+#### TEST/JENKINS.TEST.JS => SIMULA A ESTEIRA DO JENKINS, QUALITYGATE
+
+#### TEST/TDD.TEST.JS => TEST DRIVEN DEVELOPMENT
+
+#### CONFIG => CONFIGURAÇÕES DO BANCO DE DADOS
+
+#
+
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+> ## PARA PEGAR DADOS DO METODO GET
+
+`res.query`
+
+> ## PARA PEGAR DADOS DO METODO POST
+
+`res.body`
+
+> ## Consulta Parametrizada
+
+### node-postgres | Documentation | Queries
+
+### **Exemplo1:**
+
+`const sqlSanitized = SELECT _ FROM table WHERE column1=$1 AND column2=$2;`
+
+`dataBase.query(sqlSanitized, [value1, value2]);`
+
+### **Exemplo2:**
+
+`dataBase.query(SELECT _ FROM table WHERE column1=$1 AND column2=$2, [value1, value2]);`
+
+> ## Função para **sanitizar** os Dados
 
     const regexChar = /[<>`'"&]/g;
     let arrayChar;
     let escapedString = unescapedString;
 
     while ((arrayChar = regexChar.exec(unescapedString)) !== null) {
-    	let foundChar = arrayChar[0];
-    	let charCode = foundChar.charCodeAt(0);
+        let foundChar = arrayChar[0];
+        let charCode = foundChar.charCodeAt(0);
 
-    	if (foundChar === '&') foundChar = /&(?!#)/g;
+        if (foundChar === '&') foundChar = /&(?!#)/g;
 
-    	escapedString = escapedString.replace(foundChar, `&#${charCode};`);
+        escapedString = escapedString.replace(foundChar, `&#${charCode};`);
     }
 
-Exemplo de uso bcrypt
-const bcrypt = require('bcrypt');
+> ## Exemplo de uso bcrypt
 
-const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);
-//Store hash in your password DB.
+`const bcrypt = require('bcrypt');`
 
-//Load hash from your password DB.
-bcrypt.compareSync(myPlaintextPassword, hash); // true
-bcrypt.compareSync(someOtherPlaintextPassword, hash); // false
+//Store hash in your password DB.  
+`const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);`
 
-Secure cookies
-Passar as tags como um objeto para o 3ro params de res.cookie
-{
-secure: true,
-httpOnly: true,
-sameSite: 'strict'
-});
+//Load hash from your password DB.  
+`bcrypt.compareSync(myPlaintextPassword, hash);` // true  
+`bcrypt.compareSync(someOtherPlaintextPassword, hash);` // false
 
-Modelo do Banco de Dados
+> ## Secure cookies
 
-users (
-usr_id SERIAL PRIMARY KEY,
-usr_nome VARCHAR(100),
-usr_sobrenome VARCHAR(100),
-usr_telefone VARCHAR(14),
-usr_username VARCHAR(50),
-usr_email VARCHAR(100),
-usr_senha VARCHAR,
-usr_admin BOOLEAN,
-);
+> ### Passar as tags como um objeto para o 3ro params de res.cookie
 
-posts (
-posts_id SERIAL,
-posts_titulo VARCHAR(100),
-posts_pais VARCHAR(50),
-posts_fotografo VARCHAR(50),
-posts_usuario INTEGER,
-posts_privado BOOLEAN,
-);
+    {
+        secure: true,
+        httpOnly: true,
+        sameSite: 'strict'
+    });
+
+> ## Modelo do Banco de Dados
+
+    users (
+        usr_id SERIAL PRIMARY KEY,
+        usr_nome VARCHAR(100),
+        usr_sobrenome VARCHAR(100),
+        usr_telefone VARCHAR(14),
+        usr_username VARCHAR(50),
+        usr_email VARCHAR(100),
+        usr_senha VARCHAR,
+        usr_admin BOOLEAN,
+    );
+
+    posts (
+        posts_id SERIAL,
+        posts_titulo VARCHAR(100),
+        posts_pais VARCHAR(50),
+        posts_fotografo VARCHAR(50),
+        posts_usuario INTEGER,
+        posts_privado BOOLEAN,
+    );
