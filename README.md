@@ -50,13 +50,13 @@
 
 ### **Exemplo1:**
 
-`const sqlSanitized = SELECT _ FROM table WHERE column1=$1 AND column2=$2;`
+    const sqlSanitized = SELECT _ FROM table WHERE column1=$1 AND column2=$2;
 
-`dataBase.query(sqlSanitized, [value1, value2]);`
+    dataBase.query(sqlSanitized, [value1, value2]);
 
 ### **Exemplo2:**
 
-`dataBase.query(SELECT _ FROM table WHERE column1=$1 AND column2=$2, [value1, value2]);`
+    dataBase.query(SELECT _ FROM table WHERE column1=$1 AND column2=$2, [value1, value2]);
 
 > ## Função para **sanitizar** os Dados
 
@@ -75,14 +75,14 @@
 
 > ## Exemplo de uso bcrypt
 
-`const bcrypt = require('bcrypt');`
+    const bcrypt = require('bcrypt');
 
-//Store hash in your password DB.  
-`const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);`
+    //Store hash in your password DB.
+    const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);
 
-//Load hash from your password DB.  
-`bcrypt.compareSync(myPlaintextPassword, hash);` // true  
-`bcrypt.compareSync(someOtherPlaintextPassword, hash);` // false
+    //Load hash from your password DB.
+    bcrypt.compareSync(myPlaintextPassword, hash); // true
+    bcrypt.compareSync(someOtherPlaintextPassword, hash); // false
 
 > ## Secure cookies
 
