@@ -75,14 +75,14 @@
 
 > ## Exemplo de uso bcrypt
 
-`const bcrypt = require('bcrypt');`
+    const bcrypt = require('bcrypt');
 
-//Store hash in your password DB.  
-`const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);`
+    //Store hash in your password DB.  
+    const hash = bcrypt.hashSync(myPlaintextPassword, saltRounds);
 
-//Load hash from your password DB.  
-`bcrypt.compareSync(myPlaintextPassword, hash);` // true  
-`bcrypt.compareSync(someOtherPlaintextPassword, hash);` // false
+    //Load hash from your password DB.  
+    bcrypt.compareSync(myPlaintextPassword, hash); // true  
+    bcrypt.compareSync(someOtherPlaintextPassword, hash); // false
 
 > ## Secure cookies
 
