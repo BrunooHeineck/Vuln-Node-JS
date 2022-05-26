@@ -34,7 +34,7 @@ exports.getPostById = async posts_id => {
 
 exports.getPostByFotografo = async posts_fotografo => {
 	return await dataBase.query(
-		`SELECT * FROM posts WHERE posts_fotografo='${posts_fotografo}'`
+		`SELECT * FROM posts WHERE posts_fotografo like '%${posts_fotografo}%'`
 	);
 };
 

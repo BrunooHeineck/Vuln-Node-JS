@@ -21,10 +21,11 @@ router.get(
 );
 
 router.get(
-	'/api/posts',
+	'/api/postsbyfotografo',
 	errHandling(async (req, res) => {
-		const { rows: posts } = await postService.getPostByFotografo(req.query);
-		res.json({ redirect: posts });
+		const { fotografo } = req.query;
+		const { rows } = await postService.getPostByFotografo(fotografo);
+		res.json(rows);
 	})
 );
 

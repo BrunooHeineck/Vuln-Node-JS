@@ -38,6 +38,8 @@ const renderData = {
 // }
 
 router.get('/', async (req, res) => {
+	const { fotografo } = req.query;
+
 	const logout = req.url.endsWith(endpoints.logout);
 	if (logout) clearCookies(req.cookies, res, '/');
 	else {
@@ -51,11 +53,17 @@ router.get('/', async (req, res) => {
 			var { usr_username } = rows_userService[0];
 		}
 
-		const { rows } = await postService.getAllPost();
+		const { data } = await request(
+			`/api/postsbyfotografo?fotografo=${fotografo}`,
+			'get',
+			''
+		);
+
+		const { rows } = fotografo ? data : await postService.getAllPost();
 
 		renderData.logado = Boolean(usr_id);
 		renderData.username = usr_username;
-		renderData.posts = rows;
+		renderData.posts = fotografo ? data : rows;
 		renderData.admin = usr_admin;
 		res.render('initial_page', renderData);
 	}
