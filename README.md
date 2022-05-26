@@ -88,11 +88,11 @@ Os testes em questão irão simular uma esterira de deploy do Jenkins, onde caso
 
 > ## PARA PEGAR DADOS DO METODO GET
 
-`res.query`
+`req.query`
 
 > ## PARA PEGAR DADOS DO METODO POST
 
-`res.body`
+`req.body`
 
 > ## Consulta Parametrizada
 

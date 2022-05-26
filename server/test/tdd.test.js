@@ -261,7 +261,7 @@ describe('Test Driven Development', () => {
 				expect(rows[2].posts_usuario).toBe(postDados2.usuario);
 				expect(rows[2].posts_privado).toBe(postDados2.privado);
 			});
-			test.only('Deve retornar o post pelo nome do fotografo', async () => {
+			test('Deve retornar o post pelo nome do fotografo', async () => {
 				const userDados0 = fakeUser();
 				const userDados2 = fakeUser();
 
