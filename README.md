@@ -1,6 +1,4 @@
-Considerações importantes
-Toda a vez que o código for salvo o server será recarregado automaticamente.
-Caso precise recarregar o server manualmente, digitar **rs** no terminal e apertar **Enter**
+## Estrutura do código
 
 #### SERVER > ROUTES > VIEW
 
@@ -35,6 +33,54 @@ Caso precise recarregar o server manualmente, digitar **rs** no terminal e apert
 #### TEST/TDD.TEST.JS => TEST DRIVEN DEVELOPMENT
 
 #### CONFIG => CONFIGURAÇÕES DO BANCO DE DADOS
+
+# ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
+## Considerações importantes
+
+Toda a vez que o código for salvo o server será recarregado automaticamente.  
+Caso precise recarregar o server manualmente, digitar '**rs**' no terminal e apertar '**Enter**'
+
+## Para rodar os testes utilizaremos os seguintes comandos:
+
+### Testes de Vulnerabilidade
+
+`npm test jenkins`
+
+### Test Driven Development - Desenvolvimento Orientado a Testes - Testes unitários.
+
+`npm test tdd`
+
+Os testes em questão irão simular uma esterira de deploy do Jenkins, onde caso uma vulnerabilidade seja encontrada a esteira irá quebrar e não será realizado o deploy da aplicação.
+
+## Entendendo o retorno dos testes:
+
+### Cada um dos testes possui:
+
+-   **O nome da vulnerabilidade**
+-   **O que deve ser feito para corrigir a vulnerabilidade**
+-   **O path que deve ser alterado para corrigir a vulnerabilidade**
+-   **Como deve ser feita a correção**
+
+### Exemplos que podem ser econtrados nos arquivos de teste
+
+`expect(foo).toBe(bar)`  
+`esperado(foo).deveSer(bar)`  
+`esperado que FOO e BAR sejam iguais`
+
+`expect(foo).not.toBe(bar)`  
+`esperado(foo).nao.deveSer(bar)`  
+`esperado que FOO e BAR não sejam iguais`
+
+`expect(foo).toContain(bar)`  
+`esperado(foo).deveConter(bar)`  
+`esperado que FOO esteja contido na variavel BAR`
+
+### **O arquivo server\test\jenkins.test.js não deve ser editado.**
+
+### **Caso queira seguir no modelo TDD, o arquivo server\test\tdd.test.js pode ser editado.**
+
+### **Procure realizar a correção e entender as vulnerabilidades sem acessar o arquivo server\test\jenkins.test.js**
 
 #
 
